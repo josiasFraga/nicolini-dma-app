@@ -4,7 +4,7 @@ import {
 	ScrollView
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import { Button, ListItem, Text } from 'react-native-elements';
 import ModalReadIcomes from '@components/Modals/ModalReadIcomes';
 import ResumoEntradas from './ResumoEntradas';
@@ -266,7 +266,11 @@ const TabEntradas = (props) => {
                 buttonStyle={{borderRadius: 25, paddingVertical: 10, paddingHorizontal: 20, marginLeft: 15, backgroundColor: COLORS.secondary}}
                 title="FINALIZAR"
                 onPress={()=>{
-                    setModalVisible(true);
+                    navigation.dispatch(
+                        CommonActions.navigate({
+                            name: 'Finalizar',
+                        })
+                    ); 
                 }}
             />
         </View>

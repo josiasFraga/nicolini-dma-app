@@ -5,6 +5,7 @@ import COLORS from '@constants/colors';
 
 export default function FormLogin(props) {
   const formik = props.formik;
+  const buttonText = props.buttonText ? props.buttonText : 'Entrar';
 
   return (
     <>
@@ -36,7 +37,7 @@ export default function FormLogin(props) {
         <Button
             titleStyle={{}}
             buttonStyle={{borderRadius: 25, paddingVertical: 10, backgroundColor: COLORS.primary}}
-            title="Entrar"
+            title={buttonText}
             onPress={formik.handleSubmit}
             disabled={formik.isSubmiting}
             loading={formik.isSubmiting}

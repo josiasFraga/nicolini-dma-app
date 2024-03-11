@@ -398,6 +398,58 @@ function* confirmEntrada({payload}) {
 
 }
 
+function* finish({payload}){
+
+	const networkStatus = yield NetInfo.fetch();
+	
+	if ( !networkStatus.isConnected ) {
+		yield AlertHelper.show(
+			'warn',
+			'Sem conexão',
+			'Você só pode finalizar quando estiver com internet.',
+		  );
+		  payload.setSubmitting(false);
+		  return true;
+	}
+
+
+	console.log('[SAGA] - FINALIZANDO');
+
+	
+	let data = new FormData();
+	let dados = payload.submitValues;
+
+	data.append('dados', JSON.stringify(dados));
+
+	try {
+		const response = yield call(callApi, { 
+			endpoint: CONFIG.url+'/dma/finish.json',
+			method: 'POST',
+			data: data,
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
+		});
+
+		console.log('[SAGA] - [FINALIZANDO]', response);
+
+		if ( response.data.status == 'ok' ) {
+			yield payload.callback_success();
+		} else {
+			AlertHelper.show('error', 'Erro', response.data.message);
+		}
+		payload.setSubmitting(false);
+
+	} catch ({message, response}) {
+		payload.setSubmitting(false);
+
+		console.error('[SAGA] - [FINALIZANDO]', { message, response });
+		AlertHelper.show('error', 'Erro', message);
+
+	}
+
+}
+
 export default function* () {
 	yield takeLatest('LOGIN_TRIGGER', login);
 
@@ -409,7 +461,7 @@ export default function* () {
 	yield takeLatest('CONFIRM_ENTRADA', confirmEntrada);
 	yield takeLatest('LOAD_ENTRADAS', loadEntradas);
 	yield takeLatest('LOAD_SAIDAS', loadSaidas);
-	
+	yield takeLatest('FINISH', finish);
 	
 	yield takeLatest('LOGOUT', logout);
 }
