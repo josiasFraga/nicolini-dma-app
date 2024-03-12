@@ -35,11 +35,11 @@ export const appReducer = (state = INITIAL_STATE, action) => {
     case 'LOAD_CUTOUT_CODES_FAILED':
 		return {...state, is_loading_cutout_codes: false};
   
-    case 'LOAD_CUTOUT_CODES':
+    case 'LOAD_NEXT_DATE':
 		return {...state, is_next_date_loading: true, next_date: ''};
-    case 'LOAD_CUTOUT_CODES_SUCCESS':
+    case 'LOAD_NEXT_DATE_SUCCESS':
 		return {...state, is_next_date_loading: false, next_date: action.payload };
-    case 'LOAD_CUTOUT_CODES_FAILED':
+    case 'LOAD_NEXT_DATE_FAILED':
 		return {...state, is_next_date_loading: false, next_date: ''};
   
     case 'LOAD_EXPECTED_YIELD_CODES':

@@ -55,6 +55,11 @@ const ResumoEntradas = (props) => {
             setTotalEntradasRS(sum_rs_entradas);
             setTotalEntradasKg(total_kg);
 
+        } else {
+
+            setTotalEntradasRS(0);
+            setTotalEntradasKg(0);
+
         }
 
     }, [entradas, goodPrimeValue, goodSecondValue, goodBoneAndSkinValue]);
@@ -80,6 +85,11 @@ const ResumoEntradas = (props) => {
 
             setTotalSaidasRS(sum_rs_saidas);
             setTotalSaidasKg(parseFloat(sum_saidas));
+
+        } else {
+
+            setTotalSaidasRS(0);
+            setTotalSaidasKg(0);
 
         }
 
@@ -112,6 +122,11 @@ const ResumoEntradas = (props) => {
             setTotalOrcadoPrime(kg_orcado_prime);
             setTotalOrcadoSecond(kg_orcado_second);
             setTotalOrcadoBonesAndSkin(kg_orcado_bones_and_skin);
+
+        } else {
+            setTotalOrcadoPrime(0);
+            setTotalOrcadoSecond(0);
+            setTotalOrcadoBonesAndSkin(0);
 
         }
 

@@ -6,7 +6,7 @@ import {
     useWindowDimensions,
 	TouchableHighlight,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { Text, Icon } from 'react-native-elements';
 import { getUniqueId } from 'react-native-device-info';
@@ -18,14 +18,13 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-const hoje = new Date();
-const hojeDataFormatada = format(hoje, "dd/MMM", { locale: ptBR });
-
 import COLORS from '@constants/colors';
 
 const CenaHome = (props) => {
 	const dispatch = useDispatch();
     const navigation = useNavigation();
+
+	const next_date = useSelector(state => state.appReducer.next_date);
 
 	const [deviceId, setDeviceId] = useState('');
 	const [storeCode, setStoreCode] = useState('');
@@ -101,6 +100,17 @@ const CenaHome = (props) => {
 		loadStore();
 	}, []);
 
+	let proximaDataFormatada = "";
+
+	if ( next_date !== "" && next_date !== "no_date" ){
+		const proximaData = new Date(next_date);
+		proximaDataFormatada = format(proximaData, "dd/MMM", { locale: ptBR });
+	}
+
+	if ( next_date === "no_date" ) {
+		proximaDataFormatada = "no_date";
+	}
+
 	return (
 		<View style={styles.container}>
 			<StatusBar
@@ -109,7 +119,7 @@ const CenaHome = (props) => {
 				barStyle={'dark-content'}
 			/>
 			<Header 
-				titulo={storeCode + " " + hojeDataFormatada} 
+				titulo={storeCode + " " + proximaDataFormatada} 
 				styles={{backgroundColor: COLORS.primary}} 
 				titleStyle={{color: 'white'}}
 				leftElement={()=>{

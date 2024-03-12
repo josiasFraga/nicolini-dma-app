@@ -5,8 +5,6 @@ import {
 import { useSelector } from 'react-redux';
 import { Text } from 'react-native-elements';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const ResumoSaidas = () => {
 
     const saidas = useSelector(state => state.appReducer.saidas);
@@ -34,6 +32,11 @@ const ResumoSaidas = () => {
 
             setTotalSaidasRS(sum_rs_saidas);
             setTotalSaidasKg(parseFloat(sum_saidas));
+
+        } else {
+
+            setTotalSaidasRS(0);
+            setTotalSaidasKg(0);
 
         }
 

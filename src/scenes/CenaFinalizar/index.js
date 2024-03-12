@@ -10,6 +10,7 @@ import { StackActions, useNavigation } from '@react-navigation/native';
 import FormLogin from '@components/Forms/FormLogin';
 import GlobalStyle from '@styles/global';
 import { useFormik } from 'formik';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Header from '@components/Header';
 import * as yup from 'yup';
@@ -25,17 +26,10 @@ export default function CenaFinalizar(props) {
 	const dispatch = useDispatch();
     const navigation = useNavigation();
 
+	const next_date = useSelector(state => state.appReducer.next_date);
+
     const entradas = useSelector(state => state.appReducer.entradas);
-    const saidas = useSelector(state => state.appReducer.saidas);  
-
-    const componentDidMount = () => {
-
-    }
-
-
-	React.useEffect(() => {
-		componentDidMount();
-	}, [])
+    const saidas = useSelector(state => state.appReducer.saidas);
 
 	const formik = useFormik({
 		initialValues: { user: '', password: '' },
@@ -51,9 +45,11 @@ export default function CenaFinalizar(props) {
 				payload: {
                     submitValues: submitValues,
                     setSubmitting: setSubmitting,
-                    callback_success: () => {
-                        AsyncStorage.removeItem('incomes');
-                        AsyncStorage.removeItem('exits');
+                    callback_success: async () => {
+	
+                        await AsyncStorage.removeItem('incomes');
+                        await AsyncStorage.removeItem('exits');
+
                         dispatch({
                             type: 'LOAD_ENTRADAS',
                             payload: {}
@@ -62,6 +58,12 @@ export default function CenaFinalizar(props) {
                             type: 'LOAD_SAIDAS',
                             payload: {}
                         })
+
+						dispatch({
+							type: 'LOAD_NEXT_DATE',
+							payload: {}
+						});
+
                         resetForm();
                         navigation.dispatch(StackActions.pop(1));
                     }
@@ -93,7 +95,10 @@ export default function CenaFinalizar(props) {
                 saidas.length == 0 && <Text>As saídas ainda não forma lançadas</Text>
             }
             {
-                entradas.length > 0 && saidas.length > 0 && <FormLogin formik={formik} buttonText="Finalizar" />
+                next_date == "no_date" && <Text>Você não pode lançar dados para depois de amanhã!</Text>
+            }
+            {
+                entradas.length > 0 && saidas.length > 0 && next_date != 'no_date' && <FormLogin formik={formik} buttonText="Finalizar" />
             }
             </View>
         </View>

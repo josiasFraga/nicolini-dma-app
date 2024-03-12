@@ -101,10 +101,7 @@ function* loadGoods({payload}) {
 		});
 
 		if (response.status == 200) {
-			console.debug(response.data);
-			console.debug(response.status);
-			console.debug(response.data.status);
-			console.debug(response.data.data);
+
 			if (response.data.status == 'ok') {
 				yield put({
 				  type: 'LOAD_GOODS_SUCCESS',
@@ -431,6 +428,9 @@ function* loadNextDate({payload}) {
 				  type: 'LOAD_NEXT_DATE_SUCCESS',
 				  payload: response.data.data,
 				});
+
+				console.log("-> Próxima data buscada com sucesso!");
+				console.log(response.data.data);
 	
 			} else if (response.data.status == 'info') {
 				yield put({
