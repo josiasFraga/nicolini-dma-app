@@ -6,6 +6,9 @@ const INITIAL_STATE = {
   is_loading_cutout_codes: false,
   is_loading_expected_yield: false,
   saidas: [],
+  entradas: [],
+  is_next_date_loading: false,
+  next_date: '',
 };
 
 export const appReducer = (state = INITIAL_STATE, action) => {
@@ -31,6 +34,13 @@ export const appReducer = (state = INITIAL_STATE, action) => {
 		return {...state, is_loading_cutout_codes: false };
     case 'LOAD_CUTOUT_CODES_FAILED':
 		return {...state, is_loading_cutout_codes: false};
+  
+    case 'LOAD_CUTOUT_CODES':
+		return {...state, is_next_date_loading: true, next_date: ''};
+    case 'LOAD_CUTOUT_CODES_SUCCESS':
+		return {...state, is_next_date_loading: false, next_date: action.payload };
+    case 'LOAD_CUTOUT_CODES_FAILED':
+		return {...state, is_next_date_loading: false, next_date: ''};
   
     case 'LOAD_EXPECTED_YIELD_CODES':
 		return {...state, is_loading_expected_yield: true};

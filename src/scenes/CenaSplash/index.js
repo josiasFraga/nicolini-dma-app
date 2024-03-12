@@ -83,6 +83,11 @@ function CenaSplash (props) {
 					payload: {}
 				});
 
+				dispatch({
+					type: 'LOAD_NEXT_DATE',
+					payload: {}
+				});
+
 				setTimeout(() => {
 					props.navigation.dispatch(
 					CommonActions.reset({

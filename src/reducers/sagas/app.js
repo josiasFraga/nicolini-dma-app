@@ -398,6 +398,76 @@ function* confirmEntrada({payload}) {
 
 }
 
+function* loadNextDate({payload}) {
+
+	console.log('carregando próxima data');
+	const networkStatus = yield NetInfo.fetch();
+
+	//SEM INTERNET
+	if ( !networkStatus.isConnected ) {
+		yield AlertHelper.show(
+			'warn',
+			'Sem conexão',
+			'Você precisa estar conectado a internet para buscar a próxima data de lançamentos.',
+		  );
+		  return true;
+	}
+
+	const store_code = yield AsyncStorage.getItem('storeCode');
+
+	//TEM INTERNET, BUSCANDO OS DADOS ONLINE
+	try {
+		const response = yield call(callApi, {
+			endpoint: CONFIG.url + '/dma/next-date.json',
+			method: 'GET',
+			params: {
+				store_code: store_code
+			}
+		});
+
+		if (response.status == 200) {
+			if (response.data.status == 'ok') {
+				yield put({
+				  type: 'LOAD_NEXT_DATE_SUCCESS',
+				  payload: response.data.data,
+				});
+	
+			} else if (response.data.status == 'info') {
+				yield put({
+				  type: 'LOAD_NEXT_DATE_SUCCESS',
+				  payload: 'no_date',
+				});
+	
+			} else {
+				yield AlertHelper.show('error', 'Erro', response.data.msg);
+				yield put({
+					type: 'LOAD_NEXT_DATE_FAILED',
+					payload: {},
+				});
+				console.error('Erro ao buscar a data dos próximos lançamentos');
+	
+			}
+		} else {
+			yield AlertHelper.show('error', 'Erro ao buscar a data do próximo lançamento', JSON.stringify(response.data));
+			yield put({
+				type: 'LOAD_NEXT_DATE_FAILED',
+				payload: {},
+			});
+
+		}
+
+	} catch ({message, response}) {
+		console.warn('[ERROR : LOAD NEXT DATE]', {message, response});
+		yield put({
+			type: 'LOAD_NEXT_DATE_FAILED',
+			payload: {},
+		});
+		yield AlertHelper.show('error', 'Erro ao buscar a data dos próximos lançamentos', JSON.stringify(response));
+	}
+	
+
+}
+
 function* finish({payload}){
 
 	const networkStatus = yield NetInfo.fetch();
@@ -415,9 +485,12 @@ function* finish({payload}){
 
 	console.log('[SAGA] - FINALIZANDO');
 
-	
+	const store_code = yield AsyncStorage.getItem('storeCode');
+
 	let data = new FormData();
 	let dados = payload.submitValues;
+	dados.store_code = store_code;
+
 
 	data.append('dados', JSON.stringify(dados));
 
@@ -452,6 +525,8 @@ function* finish({payload}){
 
 export default function* () {
 	yield takeLatest('LOGIN_TRIGGER', login);
+	
+	yield takeLatest('LOAD_NEXT_DATE', loadNextDate);
 
 	yield takeLatest('LOAD_GOODS', loadGoods);
 	yield takeLatest('LOAD_CUTOUT_CODES', loadCutOutCodes);

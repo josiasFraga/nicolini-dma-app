@@ -5,7 +5,8 @@ import {
 	StatusBar,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import {Text, Image } from 'react-native-elements';
+import {Text } from 'react-native-elements';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import FormLogin from '@components/Forms/FormLogin';
 import GlobalStyle from '@styles/global';
 import { useFormik } from 'formik';
@@ -22,6 +23,7 @@ const ValidationSchema = yup.object().shape({
 
 export default function CenaFinalizar(props) {
 	const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const entradas = useSelector(state => state.appReducer.entradas);
     const saidas = useSelector(state => state.appReducer.saidas);  
@@ -61,6 +63,7 @@ export default function CenaFinalizar(props) {
                             payload: {}
                         })
                         resetForm();
+                        navigation.dispatch(StackActions.pop(1));
                     }
 				}
 			})
