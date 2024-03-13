@@ -7,21 +7,26 @@ export default function FormReadIncomes(props) {
   const formik = props.formik;
 
   const handleDecimalInputChange = (name, value) => {
-    // Primeiro, substitui pontos por vírgulas para padronizar o separador decimal
+    // Permite um sinal de menos no início da string e substitui pontos por vírgulas
     let formattedValue = value.replace(/\./g, ',');
-
-    // Permite apenas números e vírgula, e limita a 3 casas decimais após a vírgula
-    formattedValue = formattedValue.replace(/[^0-9,]/g, '').replace(/(,.*?),(.*?)/g, '$1');
+  
+    // Permite apenas um sinal de menos no início, números e uma vírgula, limitando a 3 casas decimais
+    formattedValue = formattedValue
+      .replace(/^-?/, '$&') // Permite o sinal de menos no início
+      .replace(/[^\d,]-/g, '') // Remove sinais de menos que não estejam no início
+      .replace(/[^0-9,-]/g, '') // Permite números, vírgula e sinal de menos
+      .replace(/(,.*?),(.*?)/g, '$1'); // Remove vírgulas adicionais, mantendo apenas a primeira
+    
     const parts = formattedValue.split(',');
-
+  
     if (parts.length > 1) {
+      // Limita a 3 casas decimais após a vírgula
       formattedValue = parts[0] + ',' + parts[1].slice(0, 3);
     }
-
+  
+    // Atualiza o valor no Formik
     formik.setFieldValue(name, formattedValue);
   };
-
-
 
   return (
     <>
