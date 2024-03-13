@@ -98,13 +98,13 @@ const TabEntradas = (props) => {
             console.log('... Carregando valores dos cortes');
 
             const primeCode = cutOutCodes.filter((cut_code)=>{
-                return cut_code.curout_type === 'PRIMEIRA';
+                return cut_code.cutout_type === 'PRIMEIRA';
             });
             const secondCode = cutOutCodes.filter((cut_code)=>{
-                return cut_code.curout_type === 'SEGUNDA';
+                return cut_code.cutout_type === 'SEGUNDA';
             });
             const BoneAndSkinCode = cutOutCodes.filter((cut_code)=>{
-                return cut_code.curout_type === 'OSSO E PELANCA';
+                return cut_code.cutout_type === 'OSSO E PELANCA';
             });
 
 
@@ -151,13 +151,13 @@ const TabEntradas = (props) => {
     const totalBoneAndSkinKg = entradas ? entradas.reduce((acc, entrada) => acc +  parseFloat(entrada.boneAndSkinKg.replace(',','.')), 0) : 0;
 
     const primeCode = cutOutCodes && cutOutCodes.filter((cut_code)=>{
-        return cut_code.curout_type === 'PRIMEIRA';
+        return cut_code.cutout_type === 'PRIMEIRA';
     });
     const secondCode = cutOutCodes && cutOutCodes.filter((cut_code)=>{
-        return cut_code.curout_type === 'SEGUNDA';
+        return cut_code.cutout_type === 'SEGUNDA';
     });
     const BoneAndSkinCode = cutOutCodes && cutOutCodes.filter((cut_code)=>{
-        return cut_code.curout_type === 'OSSO E PELANCA';
+        return cut_code.cutout_type === 'OSSO E PELANCA';
     });
 
 	return (
