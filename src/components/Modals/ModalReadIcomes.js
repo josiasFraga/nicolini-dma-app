@@ -20,15 +20,18 @@ export default function ModalReadValues(props) {
     const validationSchema = yup.object().shape({
         primeMeatKg: yup.string().required('Quantidade em KG de primeira obrigatório'),
         secondMeatKg: yup.string().required('Quantidade em KG de segunda obrigatório'),
-        boneAndSkinKg: yup.string().required('Quantidade em KG de ossos e pelancas obrigatório')
+        boneAndSkinKg: yup.string().required('Quantidade em KG de ossos e pelancas obrigatório'),
+        boneDiscardKg: yup.string().required('Quantidade em KG de osso a descartar')
     });
 
     const formik = useFormik({
         initialValues: { 
-            primeMeatKg: '', 
-            secondMeatKg: '',
-            boneAndSkinKg: ''
+            primeMeatKg: '0', 
+            secondMeatKg: '0',
+            boneAndSkinKg: '0',
+            boneDiscardKg: '0'
         },
+        enableReinitialize: true,
         validationSchema: validationSchema,
         onSubmit: (values, {setSubmitting}) => {
 
@@ -44,6 +47,7 @@ export default function ModalReadValues(props) {
                     type: 'CONFIRM_ENTRADA',
                     payload: {
                         submitValues: _entradas,
+                        isFirst: false,
                         setSubmitting: setSubmitting,
                         callback_success: () => {
                             setModalVisible(false);
@@ -59,6 +63,7 @@ export default function ModalReadValues(props) {
                     type: 'CONFIRM_ENTRADA',
                     payload: {
                         submitValues: [values],
+                        isFirst: true,
                         setSubmitting: setSubmitting,
                         callback_success: () => {
                             setModalVisible(false);

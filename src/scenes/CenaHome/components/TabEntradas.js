@@ -24,6 +24,7 @@ const TabEntradas = (props) => {
 	const [goodPrimeValue, setGoodPrimeValue] = useState(0);
 	const [goodSecondValue, setGoodSecondValue] = useState(0);
 	const [goodBoneAndSkinValue, setGoodBoneAndSkinValue] = useState(0);
+	const [goodBoneDiscardValue, setGoodBoneDiscardValue] = useState(0);
 	const [goods, setGoods] = useState([]);
     
     const entradas = useSelector(state => state.appReducer.entradas);
@@ -106,6 +107,9 @@ const TabEntradas = (props) => {
             const BoneAndSkinCode = cutOutCodes.filter((cut_code)=>{
                 return cut_code.cutout_type === 'OSSO E PELANCA';
             });
+            const BoneDiscardCode = cutOutCodes.filter((cut_code)=>{
+                return cut_code.cutout_type === 'OSSO A DESCARTE';
+            });
 
 
             const goodPrime = goods.filter((good)=>{
@@ -116,6 +120,9 @@ const TabEntradas = (props) => {
             });
             const goodBoneAndSkin = goods.filter((good)=>{
                 return parseFloat(BoneAndSkinCode[0].cutout_code) === parseFloat(good.cd_codigoint);
+            });
+            const goodBoneDiscard = goods.filter((good)=>{
+                return parseFloat(BoneDiscardCode[0].cutout_code) === parseFloat(good.cd_codigoint);
             });
 
             if ( goodPrime.length > 0 ) {
@@ -142,6 +149,14 @@ const TabEntradas = (props) => {
                 }
             }
 
+            if ( goodBoneDiscard.length > 0 ) {
+                if ( goodBoneDiscard[0].opcusto === 'M' ) {
+                    setGoodBoneDiscardValue(parseFloat(goodBoneDiscard[0].customed));
+                } else {
+                    setGoodBoneDiscardValue(parseFloat(goodBoneDiscard[0].custotab));
+                }
+            }
+
         }
 	}, [goods, cutOutCodes]);
 
@@ -149,6 +164,7 @@ const TabEntradas = (props) => {
     const totalPrimeMeatKg = entradas ? entradas.reduce((acc, entrada) => acc + parseFloat(entrada.primeMeatKg.replace(',','.')), 0) : 0;
     const totalSecondMeatKg = entradas ? entradas.reduce((acc, entrada) => acc + parseFloat(entrada.secondMeatKg.replace(',','.')), 0) : 0;
     const totalBoneAndSkinKg = entradas ? entradas.reduce((acc, entrada) => acc +  parseFloat(entrada.boneAndSkinKg.replace(',','.')), 0) : 0;
+    const totalBoneDiscardKg = entradas ? entradas.reduce((acc, entrada) => acc +  parseFloat(entrada.boneDiscardKg.replace(',','.')), 0) : 0;
 
     const primeCode = cutOutCodes && cutOutCodes.filter((cut_code)=>{
         return cut_code.cutout_type === 'PRIMEIRA';
@@ -158,6 +174,9 @@ const TabEntradas = (props) => {
     });
     const BoneAndSkinCode = cutOutCodes && cutOutCodes.filter((cut_code)=>{
         return cut_code.cutout_type === 'OSSO E PELANCA';
+    });
+    const BoneDiscardCode = cutOutCodes && cutOutCodes.filter((cut_code)=>{
+        return cut_code.cutout_type === 'OSSO A DESCARTE';
     });
 
 	return (
@@ -224,6 +243,23 @@ const TabEntradas = (props) => {
                 >
                     <ListItem.Content>
                     <ListItem.Title>{totalBoneAndSkinKg.toString().replace('.',',')}Kg</ListItem.Title>
+                    </ListItem.Content>
+                </ListItem>
+
+                <View style={GlobalStyle.spaceSmall} />
+                
+                <ListItem 
+                    bottomDivider
+                >
+                    <ListItem.Content>
+                    <ListItem.Title>Osso a Descarte - Cód: {BoneDiscardCode[0] && BoneDiscardCode[0]['cutout_code']}</ListItem.Title>
+                    </ListItem.Content>
+                </ListItem>
+                <ListItem 
+                    bottomDivider
+                >
+                    <ListItem.Content>
+                    <ListItem.Title>{totalBoneDiscardKg.toString().replace('.',',')}Kg</ListItem.Title>
                     </ListItem.Content>
                 </ListItem>
             </View>

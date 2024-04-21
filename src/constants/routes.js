@@ -6,6 +6,7 @@ import CenaHome from '@scenes/CenaHome';
 import CenaLogin from '@scenes/CenaLogin';
 import CenaSplash from '@scenes/CenaSplash';
 import CenaFinalizar from '@scenes/CenaFinalizar';
+import CenaSaidas from '@scenes/CenaSaidas';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ function Routes() {
         <Stack.Screen name="Splash" component={CenaSplash} />
         <Stack.Screen name="Login" component={CenaLogin} />
         <Stack.Screen name="Home" component={CenaHome} />
+        <Stack.Screen name="Saidas" component={CenaSaidas} />
         <Stack.Screen name="Finalizar" component={CenaFinalizar} />
       </Stack.Navigator>
     </NavigationContainer>

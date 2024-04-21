@@ -63,6 +63,17 @@ export default function FormReadIncomes(props) {
             placeholder='informe o valor em KG'
             placeholderTextColor={COLORS.quaternary}
         />
+        <Input
+            label="Osso a Descarte"
+            onChangeText={(text) => handleDecimalInputChange('boneDiscardKg', text)}
+            onBlur={formik.handleBlur('boneDiscardKg')}
+            value={formik.values.boneDiscardKg}
+            errorMessage={formik.touched.boneDiscardKg && formik.errors.boneDiscardKg}
+            keyboardType="number-pad"
+            autoCapitalize="none"
+            placeholder='informe o valor em KG'
+            placeholderTextColor={COLORS.quaternary}
+        />
         <Button
             containerStyle={{width: '100%'}}
             titleStyle={{}}

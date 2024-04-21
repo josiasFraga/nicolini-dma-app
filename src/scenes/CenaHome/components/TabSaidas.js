@@ -93,9 +93,19 @@ const TabSaidas = (props) => {
 
 		<ResumoSaidas />
 
-		<View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+		<View style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row' }}>
             <Button
-                containerStyle={{width: '100%', marginTop: 15, marginBottom: 15}}
+                containerStyle={{marginTop: 15, marginBottom: 15, marginRight: 15}}
+                titleStyle={{color: COLORS.primary}}                
+                buttonStyle={{borderRadius: 25, paddingVertical: 10, borderColor: COLORS.primary}}
+                type='outline'
+                title="Histórico"
+                onPress={()=>{
+                    navigation.navigate('Saidas');
+                }}
+            />
+            <Button
+                containerStyle={{marginTop: 15, marginBottom: 15, flex: 1}}
                 titleStyle={{}}
                 buttonStyle={{borderRadius: 25, paddingVertical: 10, backgroundColor: COLORS.primary}}
                 title="ADICIONAR SAIDA"

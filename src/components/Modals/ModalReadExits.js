@@ -8,7 +8,6 @@ import * as yup from 'yup';
 import FormReadExits from '@components/Forms/FormReadExits';
 
 import COLORS from '@constants/colors';
-import { useNavigation } from '@react-navigation/native';
 
 export default function ModalReadExits(props) {
 	const dispatch = useDispatch();
@@ -37,22 +36,29 @@ export default function ModalReadExits(props) {
 
             values.good = selectedGood;
 
-            if ( saidas.length > 0) {
+            dispatch({
+                type: 'CONFIRM_SAIDAS',
+                payload: {
+                    submitValues: values,
+                    setSubmitting: setSubmitting,
+                    callback_success: () => {
+                        setModalVisible(false);
+                    }
+                }
+            })
+
+            /*if ( saidas.length > 0) {
             
                 let _saidas = saidas.filter((data)=>{
                     return parseFloat(data.goodCode) === parseFloat(values.goodCode);
                 });
 
-                if ( _saidas.length == 0 ) {
+                /*if ( _saidas.length == 0 ) {
                     console.log('-> Registro não encontrado na listagem, adicionando...');
 
                     // Adiciona o item a lista de itens lidos
                     let _saidas = saidas;
                     _saidas.push(values);
-
-                    console.log(_saidas);
-
-                    console.log(_saidas.length);
 
                     dispatch({
                         type: 'CONFIRM_SAIDAS',
@@ -89,9 +95,9 @@ export default function ModalReadExits(props) {
                             }
                         }
                     })
-                }
+                }*/
 
-            } else {
+            /*} else {
 
                 console.log('-> Nenhum registro encontrado, salvando o primeiro.');
 
@@ -106,7 +112,7 @@ export default function ModalReadExits(props) {
                     }
                 })
 
-            }
+            }*/
         },
     });
 

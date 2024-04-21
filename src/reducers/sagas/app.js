@@ -282,23 +282,48 @@ function* logout({payload}) {
 
 function* confirmSaidas({payload}) {
 
-	// Deixar aqui senão não soma no resumo por algum motivo
-	yield put({
-		type: 'SET_SAIDAS',
-		payload: [],
-	});
+	console.log('[SAGA] - SALVANDO SAIDA');
 
-	yield put({
-		type: 'SET_SAIDAS',
-		payload: payload.submitValues,
-	});
+	const store_code = yield AsyncStorage.getItem('storeCode');
 
-	yield AsyncStorage.setItem('exits', JSON.stringify(payload.submitValues));
+	let data = new FormData();
+	let dados = payload.submitValues;
+	dados.store_code = store_code;
 
-	yield payload.setSubmitting(false);
+	data.append('dados', JSON.stringify(dados));
 
-	if ( payload.callback_success ) {
-		yield payload.callback_success();
+	try {
+		const response = yield call(callApi, { 
+			endpoint: CONFIG.url+'/dma/save-outcome.json',
+			method: 'POST',
+			data: data,
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
+		});
+
+		//console.log('[SAGA] - [SALVANDO SAIDA]', response);
+
+		if ( response.data.status == 'ok' ) {
+
+			yield payload.setSubmitting(false);
+			yield loadSaidas({payload: {}});
+
+			if ( payload.callback_success ) {
+				yield payload.callback_success();
+			}
+
+		} else {
+			AlertHelper.show('error', 'Erro', response.data.message);
+		}
+		payload.setSubmitting(false);
+
+	} catch ({message, response}) {
+		payload.setSubmitting(false);
+
+		console.error('[SAGA] - [SALVANDO SAIDA]', { message, response });
+		AlertHelper.show('error', 'Erro', message);
+
 	}
 
 }
@@ -314,7 +339,7 @@ function* loadEntradas({payload}) {
 				payload: JSON.parse(incomes_storage),
 			});
 			
-		} else {
+		} else {			
 
 			yield put({
 				type: 'SET_ENTRADAS',
@@ -340,59 +365,109 @@ function* loadEntradas({payload}) {
 
 function* loadSaidas({payload}) {
 
+	console.log('carregando saidas...');
+
+	const networkStatus = yield NetInfo.fetch();
+	
+	if ( !networkStatus.isConnected ) {
+		return true;
+	}
+
+	const store_code = yield AsyncStorage.getItem('storeCode');
+
 	try {
-		const exits_storage = yield AsyncStorage.getItem('exits');
-		if (exits_storage !== null) {
-
-			yield put({
-				type: 'SET_SAIDAS',
-				payload: JSON.parse(exits_storage),
-			});
-			
-		} else {
-
-			yield put({
-				type: 'SET_SAIDAS',
-				payload: [],
-			});
-			
-		}
-
-		if ( payload.callback_success ) {
-			yield payload.callback_success();
-		}
-	} catch (error) {
-		// Trate o erro, se necessário
-		console.error('Failed to load exits from AsyncStorage', error);
-
-		yield put({
-			type: 'SET_SAIDAS',
-			payload: [],
+		const response = yield call(callApi, {
+			endpoint: CONFIG.url + '/dma/load-outcomes.json',
+			method: 'GET',			
+			params: {
+				store_code: store_code
+			}
 		});
+
+		if (response.status == 200) {
+
+			if (response.data.status == 'ok') {
+
+				yield put({
+					type: 'SET_SAIDAS',
+					payload: response.data.data,
+				});
+	
+				yield AsyncStorage.setItem('outcomes', JSON.stringify(response.data.data));
+				
+	
+			} else {
+				yield AlertHelper.show('error', 'Erro', response.data.msg);
+			}
+		} else {
+			yield AlertHelper.show('error', 'Erro ao buscar as saídas', JSON.stringify(response.data));
+		}
+
+	} catch ({message, response}) {
+		console.warn('[ERROR : LOAD OUTCOMES]', {message, response});
+		yield AlertHelper.show('error', 'Erro ao buscar as saídas', JSON.stringify(response));
 	}
 
 }
 
 function* confirmEntrada({payload}) {
 
-	yield put({
-		type: 'SET_ENTRADAS',
-		payload: [],
-	});
+	console.log('[SAGA] - SALVANDO ENTRADA');
 
-	yield put({
-		type: 'SET_ENTRADAS',
-		payload: payload.submitValues,
-	});
+	const store_code = yield AsyncStorage.getItem('storeCode');
 
-	yield AsyncStorage.setItem('incomes', JSON.stringify(payload.submitValues));
+	let data = new FormData();
+	let dados = payload.submitValues[0];
+	dados.store_code = store_code;
 
-	yield payload.setSubmitting(false);
 
-	if ( payload.callback_success ) {
-		yield payload.callback_success();
+	data.append('dados', JSON.stringify(dados));
+
+	try {
+		const response = yield call(callApi, { 
+			endpoint: CONFIG.url+'/dma/save-income.json',
+			method: 'POST',
+			data: data,
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
+		});
+
+		console.log('[SAGA] - [SALVANDO ENTRADA]', response);
+
+		if ( response.data.status == 'ok' ) {
+			
+			
+			yield put({
+				type: 'SET_ENTRADAS',
+				payload: [],
+			});
+
+			yield put({
+				type: 'SET_ENTRADAS',
+				payload: payload.submitValues,
+			});
+
+			yield AsyncStorage.setItem('incomes', JSON.stringify(payload.submitValues));
+
+			yield payload.setSubmitting(false);
+
+			if ( payload.callback_success ) {
+				yield payload.callback_success();
+			}
+
+		} else {
+			AlertHelper.show('error', 'Erro', response.data.message);
+		}
+		payload.setSubmitting(false);
+
+	} catch ({message, response}) {
+		payload.setSubmitting(false);
+
+		console.error('[SAGA] - [FINALIZANDO]', { message, response });
+		AlertHelper.show('error', 'Erro', message);
+
 	}
-
 }
 
 function* loadNextDate({payload}) {

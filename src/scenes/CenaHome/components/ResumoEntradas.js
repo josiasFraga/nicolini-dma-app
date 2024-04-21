@@ -16,21 +16,10 @@ const ResumoEntradas = (props) => {
 	const [totalSaidasKg, setTotalSaidasKg] = useState(0);
 	const [totalSaidasRS, setTotalSaidasRS] = useState(0);
 
-	const [totalOrcadoPrime, setTotalOrcadoPrime] = useState(0);
-	const [totalOrcadoSecond, setTotalOrcadoSecond] = useState(0);
-	const [totalOrcadoBonesAndSkin, setTotalOrcadoBonesAndSkin] = useState(0);
 
     const goodPrimeValue = props.goodPrimeValue;
     const goodSecondValue = props.goodSecondValue;
     const goodBoneAndSkinValue = props.goodBoneAndSkinValue;
-
-    const goodPrimeCode = props.goodPrimeCode;
-    const goodSecondCode = props.goodSecondCode;
-    const goodBoneAndSkinCode = props.goodBoneAndSkinCode;
-
-    const totalPrimeMeatKg = props.totalPrimeMeatKg;
-    const totalSecondMeatKg = props.totalSecondMeatKg;
-    const totalBoneAndSkinKg = props.totalBoneAndSkinKg;
 
     const expectedYields = props.expectedYields;
     
@@ -95,42 +84,6 @@ const ResumoEntradas = (props) => {
 
     }, [saidas]);
 
-    useEffect(() => {
-
-        if ( saidas.length > 0 && expectedYields.length > 0 ) {
-
-            let kg_orcado_prime = 0;
-            let kg_orcado_second = 0;
-            let kg_orcado_bones_and_skin = 0;
-
-            saidas.map((saida)=>{
-                const expected_yield = expectedYields.filter((ey)=>{
-                    return parseFloat(saida.good.cd_codigoint) === parseFloat(ey.good_code);
-                });
-
-                if ( expected_yield.length > 0 ) {
-
-                    const kg_orcado = parseFloat(saida.kg);
-
-                    kg_orcado_prime += kg_orcado * (parseFloat(expected_yield[0].prime) / 100);
-                    kg_orcado_second += kg_orcado * (parseFloat(expected_yield[0].second) / 100);
-                    kg_orcado_bones_and_skin += kg_orcado * (parseFloat(expected_yield[0].bones_skin) / 100);
-
-                }
-            });
-
-            setTotalOrcadoPrime(kg_orcado_prime);
-            setTotalOrcadoSecond(kg_orcado_second);
-            setTotalOrcadoBonesAndSkin(kg_orcado_bones_and_skin);
-
-        } else {
-            setTotalOrcadoPrime(0);
-            setTotalOrcadoSecond(0);
-            setTotalOrcadoBonesAndSkin(0);
-
-        }
-
-    }, [saidas, expectedYields]);
 
 	return (
         <>
@@ -160,47 +113,6 @@ const ResumoEntradas = (props) => {
                     <View>
                         <Text style={{fontSize: 11}}>DIF. (R$): <Text style={{fontWeight: 'bold'}}>R$ {(totalSaidasRS-totalEntradasRS).toFixed(2).toString().replace('.',',')}</Text></Text>
                     </View>
-                </View>
-            </View>
-
-            <View style={{ paddingHorizontal: 16, paddingTop: 16, backgroundColor: '#FFF', paddingBottom: 16 }}>
-
-                <View style={{flexDirection: 'row'}}>
-                    <View style={{width: '20%'}}></View>
-                    <View style={{width: '20%'}}></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11, fontWeight: 'bold'}}>{goodPrimeCode}</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11, fontWeight: 'bold'}}>{goodSecondCode}</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11, fontWeight: 'bold'}}>{goodBoneAndSkinCode}</Text></View>
-                </View>
-                <View style={{flexDirection: 'row'}}>
-                    <View style={{width: '20%'}}>
-                        <Text style={{fontSize: 11}}>Projetado</Text>
-                    </View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{totalSaidasKg.toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{totalOrcadoPrime.toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{totalOrcadoSecond.toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{totalOrcadoBonesAndSkin.toFixed(2).toString().replace('.',',')} kg</Text></View>
-                </View>
-                <View style={{flexDirection: 'row'}}>
-                    <View style={{width: '20%'}}>
-                        <Text style={{fontSize: 11}}>Realizado</Text>
-                    </View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{totalEntradasKg.toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{totalPrimeMeatKg.toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{totalSecondMeatKg.toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{totalBoneAndSkinKg.toFixed(2).toString().replace('.',',')} kg</Text></View>
-                </View>
-                <View style={{flexDirection: 'row'}}>
-                    <View style={{width: '20%'}}>
-                        <Text style={{fontSize: 11}}>
-                            Diferença
-                        </Text>
-                    </View>   
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{(totalSaidasKg-totalEntradasKg).toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{(totalOrcadoPrime-totalPrimeMeatKg).toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{(totalOrcadoSecond-totalSecondMeatKg).toFixed(2).toString().replace('.',',')} kg</Text></View>
-                    <View style={{width: '20%'}}><Text style={{fontSize: 11}}>{(totalOrcadoBonesAndSkin-totalBoneAndSkinKg).toFixed(2).toString().replace('.',',')} kg</Text></View>
-       
                 </View>
             </View>
         </>
