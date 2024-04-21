@@ -88,6 +88,17 @@ function CenaSplash (props) {
 					payload: {}
 				});
 
+				dispatch({
+					type: 'LOAD_ENTRADAS',
+					payload: {}
+				});
+
+				dispatch({
+					type: 'LOAD_SAIDAS',
+					payload: {}
+				});
+
+
 				setTimeout(() => {
 					props.navigation.dispatch(
 					CommonActions.reset({

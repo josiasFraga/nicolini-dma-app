@@ -35,43 +35,16 @@ export default function ModalReadValues(props) {
         validationSchema: validationSchema,
         onSubmit: (values, {setSubmitting}) => {
 
-
-            if ( entradas.length > 0) {
-
-                console.log('-> Registro encontrado, adicionando o item.');
-
-                let _entradas = entradas; 
-                _entradas.push(values);
-
-                dispatch({
-                    type: 'CONFIRM_ENTRADA',
-                    payload: {
-                        submitValues: _entradas,
-                        isFirst: false,
-                        setSubmitting: setSubmitting,
-                        callback_success: () => {
-                            setModalVisible(false);
-                        }
+            dispatch({
+                type: 'CONFIRM_ENTRADA',
+                payload: {
+                    submitValues: values,
+                    setSubmitting: setSubmitting,
+                    callback_success: () => {
+                        setModalVisible(false);
                     }
-                })
-
-            } else {
-
-                console.log('-> Nenhum registro encontrado, salvando o primeiro.');
-
-                dispatch({
-                    type: 'CONFIRM_ENTRADA',
-                    payload: {
-                        submitValues: [values],
-                        isFirst: true,
-                        setSubmitting: setSubmitting,
-                        callback_success: () => {
-                            setModalVisible(false);
-                        }
-                    }
-                })
-
-            }
+                }
+            })
         },
     }); 
 

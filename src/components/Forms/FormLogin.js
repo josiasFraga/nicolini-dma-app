@@ -39,8 +39,8 @@ export default function FormLogin(props) {
             buttonStyle={{borderRadius: 25, paddingVertical: 10, backgroundColor: COLORS.primary}}
             title={buttonText}
             onPress={formik.handleSubmit}
-            disabled={formik.isSubmiting}
-            loading={formik.isSubmiting}
+            disabled={formik.isSubmitting}
+            loading={formik.isSubmitting}
         />
     </View>
     </>

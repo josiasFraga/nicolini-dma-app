@@ -33,7 +33,6 @@ export default function ModalReadExits(props) {
         },
         validationSchema: validationSchema,
         onSubmit: (values, {setSubmitting}) => {
-
             values.good = selectedGood;
 
             dispatch({

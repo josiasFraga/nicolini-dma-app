@@ -306,7 +306,6 @@ function* confirmSaidas({payload}) {
 
 		if ( response.data.status == 'ok' ) {
 
-			yield payload.setSubmitting(false);
 			yield loadSaidas({payload: {}});
 
 			if ( payload.callback_success ) {
@@ -329,38 +328,48 @@ function* confirmSaidas({payload}) {
 }
 
 function* loadEntradas({payload}) {
+	console.log('carregando entradas...');
 
-	try {
-		const incomes_storage = yield AsyncStorage.getItem('incomes');
-		if (incomes_storage !== null) {
-
-			yield put({
-				type: 'SET_ENTRADAS',
-				payload: JSON.parse(incomes_storage),
-			});
-			
-		} else {			
-
-			yield put({
-				type: 'SET_ENTRADAS',
-				payload: [],
-			});
-			
-		}
-
-		if ( payload.callback_success ) {
-			yield payload.callback_success();
-		}
-	} catch (error) {
-		// Trate o erro, se necessário
-		console.error('Failed to load incomes from AsyncStorage', error);
-
-		yield put({
-			type: 'SET_ENTRADAS',
-			payload: [],
-		});
+	const networkStatus = yield NetInfo.fetch();
+	
+	if ( !networkStatus.isConnected ) {
+		return true;
 	}
 
+	const store_code = yield AsyncStorage.getItem('storeCode');
+
+	try {
+		const response = yield call(callApi, {
+			endpoint: CONFIG.url + '/dma/load-incomes.json',
+			method: 'GET',			
+			params: {
+				store_code: store_code
+			}
+		});
+
+		if (response.status == 200) {
+
+			if (response.data.status == 'ok') {
+
+				yield put({
+					type: 'SET_ENTRADAS',
+					payload: response.data.data,
+				});
+	
+				yield AsyncStorage.setItem('incomes', JSON.stringify(response.data.data));
+				
+	
+			} else {
+				yield AlertHelper.show('error', 'Erro', response.data.msg);
+			}
+		} else {
+			yield AlertHelper.show('error', 'Erro ao buscar as entradas', JSON.stringify(response.data));
+		}
+
+	} catch ({message, response}) {
+		console.warn('[ERROR : LOAD INCOMES]', {message, response});
+		yield AlertHelper.show('error', 'Erro ao buscar as entradas', JSON.stringify(response));
+	}
 }
 
 function* loadSaidas({payload}) {
@@ -417,9 +426,8 @@ function* confirmEntrada({payload}) {
 	const store_code = yield AsyncStorage.getItem('storeCode');
 
 	let data = new FormData();
-	let dados = payload.submitValues[0];
+	let dados = payload.submitValues;
 	dados.store_code = store_code;
-
 
 	data.append('dados', JSON.stringify(dados));
 
@@ -433,24 +441,11 @@ function* confirmEntrada({payload}) {
 			},
 		});
 
-		console.log('[SAGA] - [SALVANDO ENTRADA]', response);
+		//console.log('[SAGA] - [SALVANDO ENTRADA]', response);
 
 		if ( response.data.status == 'ok' ) {
-			
-			
-			yield put({
-				type: 'SET_ENTRADAS',
-				payload: [],
-			});
 
-			yield put({
-				type: 'SET_ENTRADAS',
-				payload: payload.submitValues,
-			});
-
-			yield AsyncStorage.setItem('incomes', JSON.stringify(payload.submitValues));
-
-			yield payload.setSubmitting(false);
+			yield loadEntradas({payload: {}});
 
 			if ( payload.callback_success ) {
 				yield payload.callback_success();
@@ -459,10 +454,10 @@ function* confirmEntrada({payload}) {
 		} else {
 			AlertHelper.show('error', 'Erro', response.data.message);
 		}
-		payload.setSubmitting(false);
+		yield payload.setSubmitting(false);
 
 	} catch ({message, response}) {
-		payload.setSubmitting(false);
+		yield payload.setSubmitting(false);
 
 		console.error('[SAGA] - [FINALIZANDO]', { message, response });
 		AlertHelper.show('error', 'Erro', message);
