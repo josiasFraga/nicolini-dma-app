@@ -271,10 +271,6 @@ function* logout({payload}) {
 	yield AsyncStorage.removeItem('exits');
 	yield AsyncStorage.removeItem('cutOutCodes');
 
-	yield loadEntradas({payload: {}});
-
-	yield loadSaidas({payload: {}});
-
 	if ( payload.callbackSuccess ) {
 		yield payload.callbackSuccess();
 	}
@@ -333,6 +329,11 @@ function* loadEntradas({payload}) {
 	const networkStatus = yield NetInfo.fetch();
 	
 	if ( !networkStatus.isConnected ) {
+		yield AlertHelper.show(
+			'warn',
+			'Sem conexão',
+			'Você só pode carregar as entradas cadastradas quando estiver com internet.',
+		);
 		return true;
 	}
 
@@ -379,6 +380,11 @@ function* loadSaidas({payload}) {
 	const networkStatus = yield NetInfo.fetch();
 	
 	if ( !networkStatus.isConnected ) {
+		yield AlertHelper.show(
+			'warn',
+			'Sem conexão',
+			'Você só pode carregar as saídas cadastradas quando estiver com internet.',
+		);
 		return true;
 	}
 
@@ -560,7 +566,6 @@ function* finish({payload}){
 	let data = new FormData();
 	let dados = payload.submitValues;
 	dados.store_code = store_code;
-
 
 	data.append('dados', JSON.stringify(dados));
 

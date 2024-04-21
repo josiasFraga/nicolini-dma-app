@@ -88,7 +88,7 @@ function CenaSplash (props) {
 					payload: {}
 				});
 
-				dispatch({
+				/*dispatch({
 					type: 'LOAD_ENTRADAS',
 					payload: {}
 				});
@@ -96,7 +96,7 @@ function CenaSplash (props) {
 				dispatch({
 					type: 'LOAD_SAIDAS',
 					payload: {}
-				});
+				});*/
 
 
 				setTimeout(() => {

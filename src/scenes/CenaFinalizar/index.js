@@ -37,7 +37,7 @@ export default function CenaFinalizar(props) {
 		onSubmit: (values, {setSubmitting, resetForm}) => {
 
 			let submitValues = {};
-            submitValues = Object.assign(values, {entradas: entradas}, {saidas: saidas})
+            submitValues = Object.assign(values)
 			setSubmitting(true);
 		  
 			dispatch({
