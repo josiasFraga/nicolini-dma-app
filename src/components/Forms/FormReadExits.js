@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input, Button, Text } from 'react-native-elements';
 import COLORS from '@constants/colors';
+import { View } from 'react-native';
+import GlobalStyle from '@styles/global';
+
+import PickerSearchableMercadorias from '@components/Forms/Fields/PickerSearchableMercadorias';
 
 export default function FormReadExits(props) {
 
@@ -31,9 +35,8 @@ export default function FormReadExits(props) {
     formik.setFieldValue(name, formattedValue);
   };
 
-  const handleBlurGoodCode = (e) => {
+  const handleBlurGoodCode = () => {
 
-    formik.handleBlur('goodCode')(e);
 
     const goodCodeValue = formik.values.goodCode;
 
@@ -51,20 +54,26 @@ export default function FormReadExits(props) {
     }
   };
 
+  useEffect(()=>{
+
+    handleBlurGoodCode();
+
+  },[formik.values.goodCode]);
+
   return (
     <>
         <Text style={{textAlign: 'left', width: '100%', color: "#999", paddingLeft: 10}}>{'Mercadoria: ' + selectedGood?.tx_descricao}</Text>
-        <Input
-            label="Código da Marcadoria"
-            onChangeText={formik.handleChange('goodCode')}
-            onBlur={handleBlurGoodCode}
-            value={formik.values.goodCode}
-            errorMessage={formik.touched.goodCode && formik.errors.goodCode}
-            keyboardType="number-pad"
-            autoCapitalize="none"
-            placeholder='Digite o código da mercadoria'
-            placeholderTextColor={COLORS.quaternary}
+        
+        <View style={GlobalStyle.spaceSmall} />
+        <PickerSearchableMercadorias
+        value={formik.values.goodCode}
+        setValue={
+          (callback) => {
+              formik.setFieldValue('goodCode', callback(formik.values.goodCode));
+          }
+        }
         />
+        <View style={GlobalStyle.spaceSmall} />
         <Input
             label="Quantidade em Kg"
             onChangeText={(text) => handleDecimalInputChange('kg', text)}

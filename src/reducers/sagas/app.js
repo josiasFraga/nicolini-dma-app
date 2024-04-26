@@ -96,7 +96,10 @@ function* loadGoods({payload}) {
 	try {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/mercadorias/index.json',
-			method: 'GET',			
+			method: 'GET',
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
 			params: {}
 		});
 
@@ -159,6 +162,9 @@ function* loadCutOutCodes({payload}) {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/store-cutout-codes/index.json',
 			method: 'GET',
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
 			params: {
 				store_code: store_code
 			}
@@ -220,6 +226,9 @@ function* loadExpectedYield({payload}) {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/expected-yield/index.json',
 			method: 'GET',
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
 			params: {
 				store_code: store_code
 			}
@@ -342,7 +351,10 @@ function* loadEntradas({payload}) {
 	try {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/dma/load-incomes.json',
-			method: 'GET',			
+			method: 'GET',
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
 			params: {
 				store_code: store_code
 			}
@@ -393,7 +405,10 @@ function* loadSaidas({payload}) {
 	try {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/dma/load-outcomes.json',
-			method: 'GET',			
+			method: 'GET',		
+			headers: {
+				'content-type': 'multipart/form-data',
+			},	
 			params: {
 				store_code: store_code
 			}
@@ -493,6 +508,9 @@ function* loadNextDate({payload}) {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/dma/next-date.json',
 			method: 'GET',
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
 			params: {
 				store_code: store_code
 			}

@@ -273,14 +273,17 @@ const TabEntradas = (props) => {
             goodPrimeValue={goodPrimeValue}
             goodSecondValue={goodSecondValue}
             goodBoneAndSkinValue={goodBoneAndSkinValue}
+            goodBoneDiscardValue={goodBoneDiscardValue}
 
             goodPrimeCode={primeCode[0] && primeCode[0]['cutout_code']}
             goodSecondCode={secondCode[0] && secondCode[0]['cutout_code']}
             goodBoneAndSkinCode={BoneAndSkinCode[0] && BoneAndSkinCode[0]['cutout_code']}
+            goodBoneDiscardCode={BoneDiscardCode[0] && BoneDiscardCode[0]['cutout_code']}
 
             totalPrimeMeatKg={totalPrimeMeatKg}
             totalSecondMeatKg={totalSecondMeatKg}
             totalBoneAndSkinKg={totalBoneAndSkinKg}
+            totalBoneDiscardKg={totalBoneDiscardKg}
 
             expectedYields={expectedYields}
 

@@ -20,6 +20,7 @@ const ResumoEntradas = (props) => {
     const goodPrimeValue = props.goodPrimeValue;
     const goodSecondValue = props.goodSecondValue;
     const goodBoneAndSkinValue = props.goodBoneAndSkinValue;
+    const goodBoneDiscardValue = props.goodBoneDiscardValue;
 
     const expectedYields = props.expectedYields;
     
@@ -32,13 +33,15 @@ const ResumoEntradas = (props) => {
                 let boneAndSkinKg = entrada.boneAndSkinKg;
                 let primeMeatKg = entrada.primeMeatKg;
                 let secondMeatKg = entrada.secondMeatKg;
+                let boneDiscardKg = entrada.boneDiscardKg;
                 
                 boneAndSkinKg = boneAndSkinKg.replace(',','.');
+                boneDiscardKg = boneDiscardKg.replace(',','.');
                 primeMeatKg = primeMeatKg.replace(',','.');
                 secondMeatKg = secondMeatKg.replace(',','.');
 
-                total_kg += parseFloat(boneAndSkinKg) + parseFloat(primeMeatKg) + parseFloat(secondMeatKg);
-                sum_rs_entradas += (parseFloat(primeMeatKg) * goodPrimeValue) + (parseFloat(secondMeatKg) * goodSecondValue) + (parseFloat(boneAndSkinKg) * goodBoneAndSkinValue);
+                total_kg += parseFloat(boneAndSkinKg) + parseFloat(primeMeatKg) + parseFloat(secondMeatKg) + parseFloat(boneDiscardKg);
+                sum_rs_entradas += (parseFloat(primeMeatKg) * goodPrimeValue) + (parseFloat(secondMeatKg) * goodSecondValue) + (parseFloat(boneAndSkinKg) * goodBoneAndSkinValue) + (parseFloat(boneDiscardKg) * goodBoneDiscardValue);
             })
 
             setTotalEntradasRS(sum_rs_entradas);
