@@ -25,7 +25,7 @@ const PickerSearchableMercadoria = (props) => {
 
             goodsReturn = goodsData.map((item, index)=>{
                 return {
-                    id: item.cd_codigoint, label: item.tx_descricao, value: item.cd_codigoint
+                    id: item+ '' + index, label: item.cd_codigoint + ' - ' + item.tx_descricao, value: item.cd_codigoint
                 };
             });
         }
