@@ -80,7 +80,7 @@ export default function FormReadExits(props) {
             onBlur={formik.handleBlur('kg')}
             value={formik.values.kg}
             errorMessage={formik.touched.kg && formik.errors.kg}
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
             autoCapitalize="none"
             placeholder='informe o valor em KG'
             placeholderTextColor={COLORS.quaternary}

@@ -36,7 +36,7 @@ export default function FormReadIncomes(props) {
             onBlur={formik.handleBlur('primeMeatKg')}
             value={formik.values.primeMeatKg}
             errorMessage={formik.touched.primeMeatKg && formik.errors.primeMeatKg}
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
             autoCapitalize="none"
             placeholder='informe o valor em KG'
             placeholderTextColor={COLORS.quaternary}
@@ -47,7 +47,7 @@ export default function FormReadIncomes(props) {
             onBlur={formik.handleBlur('secondMeatKg')}
             value={formik.values.secondMeatKg}
             errorMessage={formik.touched.secondMeatKg && formik.errors.secondMeatKg}
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
             autoCapitalize="none"
             placeholder='informe o valor em KG'
             placeholderTextColor={COLORS.quaternary}
@@ -58,7 +58,7 @@ export default function FormReadIncomes(props) {
             onBlur={formik.handleBlur('boneAndSkinKg')}
             value={formik.values.boneAndSkinKg}
             errorMessage={formik.touched.boneAndSkinKg && formik.errors.boneAndSkinKg}
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
             autoCapitalize="none"
             placeholder='informe o valor em KG'
             placeholderTextColor={COLORS.quaternary}
@@ -69,7 +69,7 @@ export default function FormReadIncomes(props) {
             onBlur={formik.handleBlur('boneDiscardKg')}
             value={formik.values.boneDiscardKg}
             errorMessage={formik.touched.boneDiscardKg && formik.errors.boneDiscardKg}
-            keyboardType="number-pad"
+            keyboardType="decimal-pad"
             autoCapitalize="none"
             placeholder='informe o valor em KG'
             placeholderTextColor={COLORS.quaternary}
