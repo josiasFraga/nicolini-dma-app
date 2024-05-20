@@ -17,6 +17,7 @@ import IMAGES from '@constants/images';
 import COLORS from '@constants/colors';
 
 const LoginSchema = yup.object().shape({
+	store: yup.string().required('Loja é obrigatório'),
 	user: yup.string().required('Usuário é obrigatório'),
 	password: yup.string().required('Senha é obrigatória'),
 });
@@ -51,7 +52,7 @@ export default function CenaLogin(props) {
 	  }
 
 	const formik = useFormik({
-		initialValues: { user: '', password: '' },
+		initialValues: { user: '', password: '', store: '' },
 		validationSchema: LoginSchema,
 		onSubmit: (values, {setSubmitting, resetForm}) => {
 
@@ -100,7 +101,7 @@ export default function CenaLogin(props) {
 				<View style={styles.imageContainer}>
 					<Image source={IMAGES.LOGO} style={{ width: 150, height: 120 }} />
 				</View>
-				<FormLogin formik={formik} />
+				<FormLogin formik={formik} showStores={true} />
                 <View style={styles.innerSpace}>
                     <Text style={{textAlign: 'center', color: '#999', fontSize: 12}}>ID do dispositivo: {deviceId}</Text>
                 </View>

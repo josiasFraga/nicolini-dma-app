@@ -93,28 +93,28 @@ const ResumoEntradas = (props) => {
             <View style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row', paddingBottom: 16 }}>
                 <View style={{flex: 1}}>
                     <View>
-                        <Text style={{fontSize: 11}}>ENT. (KG): <Text style={{fontWeight: 'bold'}}>{totalEntradasKg.toString().replace('.',',')}Kg</Text></Text>
+                        <Text style={{fontSize: 15}}>ENT. (KG): <Text style={{fontWeight: 'bold'}}>{totalEntradasKg.toString().replace('.',',')}Kg</Text></Text>
                     </View>
                     <View>
-                        <Text style={{fontSize: 11}}>ENT. (R$): <Text style={{fontWeight: 'bold'}}>R$ {totalEntradasRS.toFixed(2).toString().replace('.',',')}</Text></Text>
+                        <Text style={{fontSize: 15}}>ENT. (R$): <Text style={{fontWeight: 'bold'}}>R$ {totalEntradasRS.toFixed(2).toString().replace('.',',')}</Text></Text>
                     </View>
                 </View>
 
                 <View style={{flex: 1, borderLeftWidth: 1, borderRightWidth: 1, paddingLeft: 16 }}>
                     <View>
-                        <Text style={{fontSize: 11}}>SAÍD. (KG): <Text style={{fontWeight: 'bold'}}>{totalSaidasKg.toString().replace('.',',')}Kg</Text></Text>
+                        <Text style={{fontSize: 15}}>SAÍD. (KG): <Text style={{fontWeight: 'bold'}}>{totalSaidasKg.toString().replace('.',',')}Kg</Text></Text>
                     </View>
                     <View>
-                        <Text style={{fontSize: 11}}>SAÍd. (R$): <Text style={{fontWeight: 'bold'}}>R$ {totalSaidasRS.toFixed(2).toString().replace('.',',')}</Text></Text>
+                        <Text style={{fontSize: 15}}>SAÍd. (R$): <Text style={{fontWeight: 'bold'}}>R$ {totalSaidasRS.toFixed(2).toString().replace('.',',')}</Text></Text>
                     </View>
                 </View>
 
                 <View style={{flex: 1, paddingLeft: 16}}>
                     <View>
-                        <Text style={{fontSize: 11}}>DIF. (KG): <Text style={{fontWeight: 'bold'}}>{(totalSaidasKg-totalEntradasKg).toFixed(2).toString().replace('.',',')}Kg</Text></Text>
+                        <Text style={{fontSize: 15}}>DIF. (KG): <Text style={{fontWeight: 'bold'}}>{(totalSaidasKg-totalEntradasKg).toFixed(2).toString().replace('.',',')}Kg</Text></Text>
                     </View>
                     <View>
-                        <Text style={{fontSize: 11}}>DIF. (R$): <Text style={{fontWeight: 'bold'}}>R$ {(totalSaidasRS-totalEntradasRS).toFixed(2).toString().replace('.',',')}</Text></Text>
+                        <Text style={{fontSize: 15}}>DIF. (R$): <Text style={{fontWeight: 'bold'}}>R$ {(totalSaidasRS-totalEntradasRS).toFixed(2).toString().replace('.',',')}</Text></Text>
                     </View>
                 </View>
             </View>

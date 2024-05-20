@@ -22,8 +22,10 @@ export const callApi = async (call) => {
         };
     } else {
         defaultHeaders = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'content-type': 'multipart/form-data',
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive'
         };
     }
 

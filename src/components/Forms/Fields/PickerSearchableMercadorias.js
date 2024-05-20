@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useSelector, useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,21 +21,22 @@ const PickerSearchableMercadoria = (props) => {
         let goodsData = await AsyncStorage.getItem('goods');
         goodsData = JSON.parse(goodsData);
         let goodsReturn = [];
-        if ( goodsData !== null ){
-
-            goodsReturn = goodsData.map((item, index)=>{
+        if (goodsData !== null) {
+            goodsReturn = goodsData.map((item, index) => {
                 return {
-                    id: item+ '' + index, label: item.cd_codigoint + ' - ' + item.tx_descricao, value: item.cd_codigoint
+                    id: item + '' + index, label: item.cd_codigoint + ' - ' + item.tx_descricao, value: item.cd_codigoint
                 };
             });
         }
         setGoods(goodsReturn);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getGoods();
     }, [])
-    
+
+    console.log(goods);
+
     return (
         <View>
             <DropDownPicker
@@ -60,9 +61,16 @@ const PickerSearchableMercadoria = (props) => {
                         )}
                     </View>
                 )}
+                textStyle={styles.textStyle} // Add this line
             />
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    textStyle: {
+        fontSize: 18, // Change this value to increase the font size
+    },
+});
 
 export default PickerSearchableMercadoria;

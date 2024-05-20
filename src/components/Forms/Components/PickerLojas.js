@@ -3,11 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Picker } from '@react-native-picker/picker';
 import { Text, View } from 'react-native'; // Import Text and View from react-native
 
-const PickerLojas = ({ formik }) => {
+const PickerLojas = ({ formik, name }) => {
     const dispatch = useDispatch();
     const lojas = useSelector(state => state.appReducer.stores);
     const placeholder = "Selecione uma loja..";
-    const name = "loja";
 
     const buscaLojas = () => {
         dispatch({ type: 'LOAD_STORES', payload: {} });
@@ -17,6 +16,7 @@ const PickerLojas = ({ formik }) => {
         console.log('buscando lojas...');
         buscaLojas();
     }, []);
+
 
     return (
         <View>
@@ -31,9 +31,11 @@ const PickerLojas = ({ formik }) => {
                     <Picker.Item key={"option_loja_" + index} label={loja.Loja} value={loja.Loja} />
                 ))}
             </Picker>
-            {formik.touched[name] && formik.errors[name] && (
+            <View style={{marginLeft: 15, marginTop: 0, paddingTop: 0, marginBottom: 10}}>
+            {formik.errors[name] && (
                 <Text style={{ color: 'red' }}>{formik.errors[name]}</Text> // Style as needed
             )}
+            </View>
         </View>
     );
 };

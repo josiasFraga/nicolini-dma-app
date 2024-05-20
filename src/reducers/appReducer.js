@@ -9,6 +9,7 @@ const INITIAL_STATE = {
   entradas: [],
   is_next_date_loading: false,
   next_date: '',
+  stores: []
 };
 
 export const appReducer = (state = INITIAL_STATE, action) => {
@@ -48,6 +49,13 @@ export const appReducer = (state = INITIAL_STATE, action) => {
 		return {...state, is_loading_expected_yield: false };
     case 'LOAD_EXPECTED_YIELD_FAILED':
 		return {...state, is_loading_expected_yield: false};
+    
+    case 'LOAD_STORES':
+		return {...state, is_sotres_loading: true, stores: []};
+    case 'LOAD_STORES_SUCCESS':
+		return {...state, is_sotres_loading: false, stores: action.payload };
+    case 'LOAD_STORES_FAILED':
+		return {...state, is_sotres_loading: false, stores: []};
   
     case 'SET_SAIDAS':
 		return {...state, saidas: action.payload};

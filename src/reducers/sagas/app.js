@@ -92,15 +92,20 @@ function* loadGoods({payload}) {
 		return true;
 	}
 
+	const store_code = yield AsyncStorage.getItem('storeCode');
+
+	console.log(store_code);
+
+
 	//TEM INTERNET, BUSCANDO OS DADOS ONLINE
 	try {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/mercadorias/index.json',
 			method: 'GET',
-			headers: {
-				'content-type': 'multipart/form-data',
-			},
-			params: {}
+			showJSON: true,
+			params: {
+				store_code: store_code
+			}
 		});
 
 		if (response.status == 200) {
@@ -220,6 +225,10 @@ function* loadExpectedYield({payload}) {
 	}
 
 	const store_code = yield AsyncStorage.getItem('storeCode');
+
+	if ( !store_code ){
+		return false;
+	}
 
 	//TEM INTERNET, BUSCANDO OS DADOS ONLINE
 	try {
@@ -616,6 +625,64 @@ function* finish({payload}){
 
 }
 
+function* loadStores({payload}) {
+
+	console.log('carregando lojas');
+
+	const networkStatus = yield NetInfo.fetch();
+	
+	//SEM INTERNET, NÃO ATUALIZA A LISTA DE MERCADORIAS
+	if ( !networkStatus.isConnected ) {
+		return true;
+
+	}
+
+	//TEM INTERNET, BUSCANDO OS DADOS ONLINE
+	try {
+		const response = yield call(callApi, {
+			endpoint: CONFIG.url + '/lojas/index.json',
+			method: 'GET'
+		});
+
+		if (response.status == 200) {
+			if (response.data.status == 'ok') {
+				yield put({
+				  type: 'LOAD_STORES_SUCCESS',
+				  payload: response.data.data,
+				});
+				console.log('Busca de lojas ok');
+	
+			} else {
+				yield AlertHelper.show('error', 'Erro', response.data.msg);
+				yield put({
+					type: 'LOAD_STORES_FAILED',
+					payload: {},
+				});
+				console.error('Erro ao buscar as lojas');
+	
+			}
+		} else {
+			yield AlertHelper.show('error', 'Erro ao buscar as lojas', JSON.stringify(response.data));
+			yield put({
+				type: 'LOAD_STORES_FAILED',
+				payload: {},
+			});
+
+		}
+
+	} catch ({message, response}) {
+		console.warn('[ERROR : LOAD STORES]', {message, response});
+		yield put({
+			type: 'LOAD_STORES_FAILED',
+			payload: {},
+		});
+		yield AlertHelper.show('error', 'Erro ao buscar as lojas', JSON.stringify(response));
+	}
+	
+
+
+}
+
 export default function* () {
 	yield takeLatest('LOGIN_TRIGGER', login);
 	
@@ -630,6 +697,8 @@ export default function* () {
 	yield takeLatest('LOAD_ENTRADAS', loadEntradas);
 	yield takeLatest('LOAD_SAIDAS', loadSaidas);
 	yield takeLatest('FINISH', finish);
+
+	yield takeLatest('LOAD_STORES', loadStores);
 	
 	yield takeLatest('LOGOUT', logout);
 }

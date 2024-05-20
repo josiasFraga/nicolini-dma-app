@@ -2,14 +2,17 @@ import React from 'react';
 import { View } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
 import COLORS from '@constants/colors';
+import PickerLojas from './Components/PickerLojas';
 
 export default function FormLogin(props) {
   const formik = props.formik;
   const buttonText = props.buttonText ? props.buttonText : 'Entrar';
+  const showStores = props.showStores;
 
   return (
     <>
     <View>
+        {showStores && <PickerLojas formik={formik} name={'store'} />}
         <Input
             label="Login"
             leftIcon={<Icon name="user" type={"antdesign"} size={24} color={COLORS.quaternary} />}

@@ -85,15 +85,33 @@ export default function FormReadExits(props) {
             placeholder='informe o valor em KG'
             placeholderTextColor={COLORS.quaternary}
         />
-        <Button
-            containerStyle={{width: '100%'}}
-            titleStyle={{}}
-            buttonStyle={{borderRadius: 25, paddingVertical: 10, backgroundColor: COLORS.primary}}
-            title="Confirmar"
-            onPress={formik.handleSubmit}
-            disabled={formik.isSubmitting}
-            loading={formik.isSubmitting}
-        />
+        <View style={GlobalStyle.row}>
+          <Button
+              containerStyle={{marginRight: 15, width: 35}}
+              titleStyle={{}}
+              buttonStyle={{borderRadius: 10, paddingVertical: 10, backgroundColor: 'red'}}
+              title="-"
+              onPress={()=>{
+                const kgValue = formik.values.kg;
+                if (kgValue.startsWith('-')) {
+                  formik.setFieldValue('kg', kgValue.slice(1));
+                } else {
+                    formik.setFieldValue('kg', '-' + kgValue);
+                }
+              }}
+              disabled={formik.isSubmitting}
+              loading={formik.isSubmitting}
+          />
+          <Button
+              containerStyle={{flex: 1}}
+              titleStyle={{}}
+              buttonStyle={{borderRadius: 10, paddingVertical: 10, backgroundColor: 'green', marginBottom: 15}}
+              title="Confirmar"
+              onPress={formik.handleSubmit}
+              disabled={formik.isSubmitting}
+              loading={formik.isSubmitting}
+          />
+        </View>
     </>
   );
 }

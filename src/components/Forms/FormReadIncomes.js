@@ -1,31 +1,52 @@
 import React from 'react';
-import { Input, Button, Text } from 'react-native-elements';
+import { Input, Button } from 'react-native-elements';
+import { View } from 'react-native';
 import COLORS from '@constants/colors';
+import GlobalStyle from '@styles/global';
 
 export default function FormReadIncomes(props) {
 
   const formik = props.formik;
 
   const handleDecimalInputChange = (name, value) => {
-    // Permite um sinal de menos no início da string e substitui pontos por vírgulas
-    let formattedValue = value.replace(/\./g, ',');
-  
-    // Permite apenas um sinal de menos no início, números e uma vírgula, limitando a 3 casas decimais
-    formattedValue = formattedValue
-      .replace(/^-?/, '$&') // Permite o sinal de menos no início
-      .replace(/[^\d,]-/g, '') // Remove sinais de menos que não estejam no início
-      .replace(/[^0-9,-]/g, '') // Permite números, vírgula e sinal de menos
-      .replace(/(,.*?),(.*?)/g, '$1'); // Remove vírgulas adicionais, mantendo apenas a primeira
+    // Remove todos os caracteres que não sejam números
+    let numericValue = value.replace(/[^\d]/g, '');
     
-    const parts = formattedValue.split(',');
-  
-    if (parts.length > 1) {
-      // Limita a 3 casas decimais após a vírgula
-      formattedValue = parts[0] + ',' + parts[1].slice(0, 3);
+    // Remove zeros à esquerda
+    numericValue = numericValue.replace(/^0+/, '');
+
+    // Adiciona zeros à esquerda se necessário para garantir pelo menos quatro dígitos
+    while (numericValue.length < 4) {
+      numericValue = '0' + numericValue;
     }
-  
+
+    // Limita a 9 caracteres no total (6 antes da vírgula e 3 após a vírgula)
+    if (numericValue.length > 9) {
+      numericValue = numericValue.slice(-9);
+    }
+
+    // Formata a string com a vírgula antes dos três últimos dígitos
+    let formattedValue = numericValue.slice(0, -3) + ',' + numericValue.slice(-3);
+    
+    // Remove zeros à esquerda, exceto se for o último zero antes da vírgula
+    formattedValue = formattedValue.replace(/^0+(?=\d)/, '');
+
     // Atualiza o valor no Formik
     formik.setFieldValue(name, formattedValue);
+  };
+
+  const toggleSign = () => {
+    const fieldsToToggle = ['primeMeatKg', 'secondMeatKg', 'boneAndSkinKg', 'boneDiscardKg']; // Add all the field names you want to toggle
+    fieldsToToggle.forEach((field) => {
+      const value = formik.values[field];
+      if (value && value !== '0') {
+        if (value.startsWith('-')) {
+          formik.setFieldValue(field, value.slice(1));
+        } else {
+          formik.setFieldValue(field, '-' + value);
+        }
+      }
+    });
   };
 
   return (
@@ -74,15 +95,26 @@ export default function FormReadIncomes(props) {
             placeholder='informe o valor em KG'
             placeholderTextColor={COLORS.quaternary}
         />
-        <Button
-            containerStyle={{width: '100%'}}
-            titleStyle={{}}
-            buttonStyle={{borderRadius: 25, paddingVertical: 10, backgroundColor: COLORS.primary}}
-            title="Confirmar"
-            onPress={formik.handleSubmit}
-            disabled={formik.isSubmitting}
-            loading={formik.isSubmitting}
-        />
+        <View style={GlobalStyle.row}>
+          <Button
+              containerStyle={{marginRight: 15, width: 35}}
+              titleStyle={{}}
+              buttonStyle={{borderRadius: 10, paddingVertical: 10, backgroundColor: 'red'}}
+              title="-"
+              onPress={toggleSign}
+              disabled={formik.isSubmitting}
+              loading={formik.isSubmitting}
+          />
+          <Button
+              containerStyle={{flex: 1}}
+              titleStyle={{}}
+              buttonStyle={{borderRadius: 10, paddingVertical: 10, backgroundColor: 'green', marginBottom: 15}}
+              title="Confirmar"
+              onPress={formik.handleSubmit}
+              disabled={formik.isSubmitting}
+              loading={formik.isSubmitting}
+          />
+        </View>
     </>
   );
 }

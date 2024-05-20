@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, Modal } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Modal } from 'react-native';
 import { Button } from 'react-native-elements';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
@@ -11,8 +11,6 @@ import COLORS from '@constants/colors';
 
 export default function ModalReadValues(props) {
 	const dispatch = useDispatch();
-
-    const entradas = useSelector(state => state.appReducer.entradas);
 
     const modalVisible = props.modalVisible;
     const setModalVisible = props.setModalVisible;
