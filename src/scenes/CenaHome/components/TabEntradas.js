@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
 	View,
-	ScrollView
+	ScrollView,
+    Linking
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, CommonActions } from '@react-navigation/native';
@@ -179,6 +180,10 @@ const TabEntradas = (props) => {
         return cut_code.cutout_type === 'OSSO A DESCARTE';
     });
 
+    const handleOpenResults = () => {
+        Linking.openURL('http://192.168.1.221/admin/results/public');
+    };
+
 	return (
 		<>
 		<ScrollView style={{flex: 1}}>
@@ -198,19 +203,6 @@ const TabEntradas = (props) => {
                     <ListItem.Title>{totalPrimeMeatKg.toString().replace('.',',')}Kg</ListItem.Title>
                     </ListItem.Content>
                 </ListItem>
-                {/*
-                    entradas && entradas.map((entrada, index)=>{
-                        return (
-                            <ListItem 
-                                bottomDivider key={'prime_' + index}
-                            >
-                                <ListItem.Content>
-                                <ListItem.Title>{entrada.primeMeatKg}Kg</ListItem.Title>
-                                </ListItem.Content>
-                            </ListItem>
-                        )
-                    })
-                */}
 
                 <View style={GlobalStyle.spaceSmall} />
                 
@@ -263,6 +255,13 @@ const TabEntradas = (props) => {
                     </ListItem.Content>
                 </ListItem>
             </View>
+            <Button
+                containerStyle={{ margin: 16 }}
+                titleStyle={{ color: COLORS.primary }}
+                buttonStyle={{ borderRadius: 25, paddingVertical: 10, backgroundColor: COLORS.secondary }}
+                title="Ver Resultados"
+                onPress={handleOpenResults}
+            />
             <ModalReadIcomes
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}

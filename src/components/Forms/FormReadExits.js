@@ -14,23 +14,28 @@ export default function FormReadExits(props) {
   const setSelectedGood = props.setSelectedGood;
 
   const handleDecimalInputChange = (name, value) => {
-    // Permite um sinal de menos no início da string e substitui pontos por vírgulas
-    let formattedValue = value.replace(/\./g, ',');
-  
-    // Permite apenas um sinal de menos no início, números e uma vírgula, limitando a 3 casas decimais
-    formattedValue = formattedValue
-      .replace(/^-?/, '$&') // Permite o sinal de menos no início
-      .replace(/[^\d,]-/g, '') // Remove sinais de menos que não estejam no início
-      .replace(/[^0-9,-]/g, '') // Permite números, vírgula e sinal de menos
-      .replace(/(,.*?),(.*?)/g, '$1'); // Remove vírgulas adicionais, mantendo apenas a primeira
+    // Remove todos os caracteres que não sejam números
+    let numericValue = value.replace(/[^\d]/g, '');
     
-    const parts = formattedValue.split(',');
-  
-    if (parts.length > 1) {
-      // Limita a 3 casas decimais após a vírgula
-      formattedValue = parts[0] + ',' + parts[1].slice(0, 3);
+    // Remove zeros à esquerda
+    numericValue = numericValue.replace(/^0+/, '');
+
+    // Adiciona zeros à esquerda se necessário para garantir pelo menos quatro dígitos
+    while (numericValue.length < 4) {
+      numericValue = '0' + numericValue;
     }
-  
+
+    // Limita a 9 caracteres no total (6 antes da vírgula e 3 após a vírgula)
+    if (numericValue.length > 9) {
+      numericValue = numericValue.slice(-9);
+    }
+
+    // Formata a string com a vírgula antes dos três últimos dígitos
+    let formattedValue = numericValue.slice(0, -3) + ',' + numericValue.slice(-3);
+    
+    // Remove zeros à esquerda, exceto se for o último zero antes da vírgula
+    formattedValue = formattedValue.replace(/^0+(?=\d)/, '');
+
     // Atualiza o valor no Formik
     formik.setFieldValue(name, formattedValue);
   };
