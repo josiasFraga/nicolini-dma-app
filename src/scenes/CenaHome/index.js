@@ -1,225 +1,185 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
-	StyleSheet,
-	View,
-	StatusBar,
-    useWindowDimensions,
-	TouchableHighlight,
+  StyleSheet,
+  View,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, CommonActions } from '@react-navigation/native';
-import { Text, Icon } from 'react-native-elements';
-import { getUniqueId } from 'react-native-device-info';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import TabEntradas from './components/TabEntradas';
-import TabSaidas from './components/TabSaidas';
-import Header from '@components/Header';
-import { TabView, SceneMap } from 'react-native-tab-view';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
-import COLORS from '@constants/colors';
+import AnimatedLoader from '@components/Loader';
+import { Icon } from 'react-native-elements';
+
+import Header from '@components/Header';
+
+const COLORS = {
+  primary: '#E30613', // Vermelho Nicolini
+  secondary: '#FF6600', // Laranja Nicolini
+  white: '#FFFFFF',
+  text: '#333333',
+};
+
+const icons = {
+    bull: require('@assets/imgs/bull.png'),
+    vegetable: require('@assets/imgs/vegetable.png')
+};
+
 
 const CenaHome = (props) => {
-	const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const navigation = useNavigation();
 
-	const next_date = useSelector(state => state.appReducer.next_date);
+    const isLoading = useSelector((state) => state.appReducer.is_user_products_loading);
+    const products = useSelector((state) => state.appReducer.user_products);
 
-	const [deviceId, setDeviceId] = useState('');
-	const [storeCode, setStoreCode] = useState('');
-	const [index, setIndex] = React.useState(0);	
-	const layout = useWindowDimensions();
+    const loadUserProducts = async () => {
+        console.log('... Buscando produtos que o usuário tem acesso');
+        dispatch({
+        type: 'GET_USER_PRODUCTS',
+        payload: '',
+        });
+    };
 
-	const [routes] = useState([
-		{ key: 'first', title: 'Saídas' },
-		{ key: 'second', title: 'Entradas' },
-	]);
+    useEffect(() => {
+        loadUserProducts();
+    }, []);
 
-	const renderTabBar = props => (
-		<View style={{ flexDirection: 'row' }}>
-		  {props.navigationState.routes.map((route, i) => {
-			const isActive = props.navigationState.index === i;
-			const color = isActive ? '#f7f7f7' : COLORS.secondary;
-			const backgroundColor = COLORS.primary;
-			const underlayColor = '#B3749F'; // Cor de fundo ao clicar no botão
-	  
-			// Estilos para a linha abaixo do item ativo
-			const borderBottomColor = isActive ? '#FFFFFF' : backgroundColor;
-			const borderBottomWidth = isActive ? 2 : 0;
-	  
-			return (
-			  <TouchableHighlight
-				key={i}
-				underlayColor={underlayColor}
-				style={{ 
-				  flex: 1,
-				  backgroundColor,
-				  justifyContent: 'center',
-				  alignItems: 'center',
-				  paddingVertical: 7,
-				  borderBottomColor,
-				  borderBottomWidth
-				}}
-				onPress={() => setIndex(i)}>
-				<Text style={{ color, fontWeight: 'bold', fontSize: 16 }}>{route.title}</Text>
-			  </TouchableHighlight>
-			);
-		  })}
-		</View>
-	);
+    const renderButtons = () => {
+        return products.map((product) => {
+          console.log(icons[product.app_product.icon]);
+          return (
+            <View key={`btn_${product.app_product_id}`} style={{ alignItems: 'center' }}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  if (product.app_product.cene) {
+                    navigation.navigate(product.app_product.cene);
+                  } else {
+                    console.log('Cena não definida para este produto.');
+                  }
+                }}>
+                {product.app_product.icon ? (
+                  <Image
+                    source={icons[product.app_product.icon]}
+                    style={styles.icon}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <Icon
+                    name="layers"
+                    type="material"
+                    color={COLORS.white}
+                    size={40}
+                    containerStyle={styles.iconPlaceholder}
+                  />
+                )}
+              </TouchableOpacity>
+              <Text style={styles.buttonText}>{product.app_product.name}</Text>
+            </View>
+          );
+        });
+    };
+      
+      
 
-	const renderScene = SceneMap({
-		first: TabSaidas,
-		second: TabEntradas,
-	});
+    return (
+        <View style={styles.container}>
+        <StatusBar
+            translucent={true}
+            backgroundColor={'transparent'}
+            barStyle={'light-content'}
+        />
+        <Header
+            titulo={'Pra onde deseja ir?'}
+            styles={{ backgroundColor: COLORS.primary }}
+            titleStyle={{ color: COLORS.white }}
+            leftElement={() => {
+            return (
+                <Icon
+                name="logout"
+                type="simple-line"
+                color={COLORS.white}
+                size={30}
+                onPress={() => {
+                    dispatch({
+                    type: 'LOGOUT',
+                    payload: {
+                        callbackSuccess: () => {
+                        navigation.dispatch(
+                            CommonActions.navigate({
+                            name: 'Login',
+                            })
+                        );
+                        },
+                    },
+                    });
+                }}
+                containerStyle={{ backgroundColor: 'transparent' }}
+                />
+            );
+            }}
+        />
 
-	const loadStore = async () => {
-		console.log('... Buscando código da loja');
-		try {
-            const sotoreCodeData = await AsyncStorage.getItem('storeCode');
-            if (sotoreCodeData !== null) {
-                // Se houver dados salvos, analise-os e atualize o estado 'goods'
-                setStoreCode(sotoreCodeData);
-            } else {
-				console.log('.. Código da loja em branco.')
-			}
-        } catch (error) {
-            // Trate o erro, se necessário
-            console.error('Failed to load storeCode from AsyncStorage', error);
-        }
-	}
-
-	useEffect(() => {
-		const fetchDeviceId = async () => {
-			const deviceId = await getUniqueId();
-			setDeviceId(deviceId);
-		};
-
-		fetchDeviceId();
-		loadStore();
-	}, []);
-
-	let proximaDataFormatada = "";
-
-	if ( next_date !== "" && next_date !== "no_date" ){
-		const proximaData = new Date(next_date);
-		proximaDataFormatada = format(proximaData, "dd/MMM", { locale: ptBR });
-	}
-
-	if ( next_date === "no_date" ) {
-		proximaDataFormatada = "no_date";
-	}
-
-	return (
-		<View style={styles.container}>
-			<StatusBar
-				translucent={true}
-				backgroundColor={'transparent'}
-				barStyle={'dark-content'}
-			/>
-			<Header 
-				titulo={storeCode + " " + proximaDataFormatada} 
-				styles={{backgroundColor: COLORS.primary}} 
-				titleStyle={{color: 'white'}}
-				leftElement={()=>{
-					return (
-						<Icon
-							name="logout"
-							type="simple-line"
-							color={"#FFF"}
-							size={30}
-							onPress={() => {
-
-								dispatch({
-									type: 'LOGOUT',
-									payload: {
-										callbackSuccess: () => {
-											navigation.dispatch(
-												CommonActions.navigate({
-													name: 'Login',
-												})
-											); 
-										}
-									}
-								})
-							
-							}}
-							containerStyle={{backgroundColor: 'transparent'}}
-					  	/>
-					)
-				}}
-			/>
-			<TabView
-				navigationState={{ index, routes }}
-				renderScene={renderScene}
-				onIndexChange={setIndex}
-				initialLayout={{ width: layout.width }}
-				scrollEnabled
-				tabStyle={{}}
-				renderTabBar={renderTabBar}
-				swipeEnabled={false}
-			/>
-		</View>
-	);
-}
+        {isLoading && <AnimatedLoader visible={true} speed={1} />}
+        {!isLoading && (
+            <View style={styles.buttonsContainer}>{renderButtons()}</View>
+        )}
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
-	imageContainer: { 
-		justifyContent: 'center',
-		alignItems: 'center',
-		marginTop: 30
-	},
-	text: {
-		fontFamily: 'Mitr-Regular',
-		lineHeight: 18,
-	},
-	textMedium: {
-		fontFamily: 'Mitr-Medium',
-		marginBottom: 3,
-	},
-	centerFully: {
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	subtitle: {
-		textAlign: 'center',
-		fontSize: 15,
-		marginBottom: 7,
-	},
-	innerSpace: {
-		padding: 15,
-	},
-	discountBox: {
-		borderWidth: 0.5,
-		borderColor: '#CCC',
-		padding: 15,
-		borderRadius: 15,
-		margin: 15,
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	buttonVisitante: {
-		marginTop: 15,
-	},
-	buttonCadastrarText: {
-		textAlign: 'center',
-		color: '#FFF',
-	},
-	bgImage: {
-		width: 120,
-		height: 120,
-		position: 'absolute',
-		zIndex: 999,
-		bottom:-50,
-		right: -20,
-		alignSelf: 'flex-end',
-	}
-});
+    container: {
+      flex: 1,
+      backgroundColor: COLORS.white
+    },
+    buttonsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignContent: 'center',
+      padding: 20,
+      flex: 1,
+    },
+    button: {
+      width: 80, // Ajuste do tamanho do botão
+      height: 80,
+      backgroundColor:  COLORS.secondary,
+      borderRadius: 50, // Botão redondo
+      marginHorizontal: 15,
+      //marginVertical: 20,
+      marginBottom: 7,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 6,
+    },
+    icon: {
+      width: 50, // Tamanho do ícone no botão
+      height: 50,
+    },
+    iconPlaceholder: {
+      width: 60,
+      height: 60,
+      backgroundColor: COLORS.secondary,
+      borderRadius: 30, // Placeholder redondo
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    buttonText: {
+      //marginTop: 10, // Espaçamento entre o texto e o botão
+      color: COLORS.secondary,
+      textAlign: 'center',
+      fontSize: 12,
+      fontWeight: 'bold',
+    },
+});  
 
 export default CenaHome;

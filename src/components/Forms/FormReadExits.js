@@ -42,8 +42,12 @@ export default function FormReadExits(props) {
 
   const handleBlurGoodCode = () => {
 
+    console.log('... searchInteralCodeIntoGoods');
+
 
     const goodCodeValue = formik.values.goodCode;
+    console.log('goodCodeValue');
+    console.log(goodCodeValue);
 
     if (goodCodeValue) {
       const good_filter = searchInteralCodeIntoGoods(goodCodeValue);
@@ -54,13 +58,15 @@ export default function FormReadExits(props) {
         setSelectedGood('');
 
       } else {
+        console.log(good_filter);
         setSelectedGood(good_filter);
       }
+    } else {      
+      console.log('-> Mercadoria encontrada ' . goodCode);
     }
   };
 
   useEffect(()=>{
-
     handleBlurGoodCode();
 
   },[formik.values.goodCode]);
@@ -74,6 +80,8 @@ export default function FormReadExits(props) {
         value={formik.values.goodCode}
         setValue={
           (callback) => {
+            console.log('formik.values.goodCode');
+            console.log(formik.values.goodCode);
               formik.setFieldValue('goodCode', callback(formik.values.goodCode));
           }
         }

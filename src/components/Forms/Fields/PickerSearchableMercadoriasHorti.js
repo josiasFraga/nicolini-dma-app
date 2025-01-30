@@ -1,8 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 DropDownPicker.addTranslation("EN", {
@@ -13,22 +12,33 @@ DropDownPicker.addTranslation("EN", {
 });
 DropDownPicker.setLanguage("EN");
 
-const PickerSearchableMercadoria = (props) => {
+const PickerSearchableMercadoriasHorti = (props) => {
     const [open, setOpen] = useState(false);
     const [goods, setGoods] = useState([]);
     const dispatch = useDispatch();
     const getGoods = async () => {
-        let goodsData = await AsyncStorage.getItem('goods');
-        goodsData = JSON.parse(goodsData);
-        let goodsReturn = [];
-        if (goodsData !== null) {
-            goodsReturn = goodsData.map((item, index) => {
-                return {
-                    id: item + '' + index, label: item.cd_codigoint + ' - ' + item.tx_descricao, value: item.cd_codigoint
-                };
-            });
+        try {
+            let goodsData = await AsyncStorage.getItem('goods_produce_section');
+            
+            // Verifique se goodsData não é nulo e converta-o para um array
+            if (goodsData !== null) {
+                goodsData = JSON.parse(goodsData); // Converte a string JSON em um array
+                
+                let goodsReturn = goodsData.map((item, index) => {
+                    return {
+                        id: item.cd_codigoint + '_' + index, 
+                        label: item.cd_codigoint + ' - ' + item.tx_descricao, 
+                        value: item.cd_codigoint
+                    };
+                });
+    
+                setGoods(goodsReturn);
+            } else {
+                setGoods([]); // Define como array vazio se nenhum dado for encontrado
+            }
+        } catch (error) {
+            console.error('Erro ao carregar mercadorias:', error);
         }
-        setGoods(goodsReturn);
     }
 
     useEffect(() => {
@@ -71,4 +81,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PickerSearchableMercadoria;
+export default PickerSearchableMercadoriasHorti;

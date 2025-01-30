@@ -5,6 +5,13 @@ import AlertHelper from '@components/Alert/AlertHelper';
 import CONFIG from '@constants/configs';
 import NetInfo from "@react-native-community/netinfo";
 
+import { get } from './utils/get';
+import { post } from './utils/post';
+
+const getStoredStoreCode = async () => {
+	return await AsyncStorage.getItem('storeCode');
+}
+
 function* login({payload}) {
 
 	const networkStatus = yield NetInfo.fetch();
@@ -83,69 +90,99 @@ function* login({payload}) {
 
 function* loadGoods({payload}) {
 
-	console.log('carregando produtos');
-
-	const networkStatus = yield NetInfo.fetch();
-	
-	//SEM INTERNET, NÃO ATUALIZA A LISTA DE MERCADORIAS
-	if ( !networkStatus.isConnected ) {
-		return true;
-	}
-
-	const store_code = yield AsyncStorage.getItem('storeCode');
-
-	console.log(store_code);
-
-
-	//TEM INTERNET, BUSCANDO OS DADOS ONLINE
-	try {
-		const response = yield call(callApi, {
-			endpoint: CONFIG.url + '/mercadorias/index.json',
-			method: 'GET',
-			showJSON: true,
-			params: {
-				store_code: store_code
-			}
-		});
-
-		if (response.status == 200) {
-
-			if (response.data.status == 'ok') {
-				yield put({
-				  type: 'LOAD_GOODS_SUCCESS',
-				  payload: {},
-				});
-				console.log('Lista de mercadorias atualizada com sucesso!');
-				yield AsyncStorage.setItem('goods', JSON.stringify(response.data.data));
-	
-			} else {
-				yield AlertHelper.show('error', 'Erro', response.data.msg);
-				yield put({
-					type: 'LOAD_GOODS_FAILED',
-					payload: {},
-				});
-				console.error('Erro ao buscar as mercadoriass');
-	
-			}
-		} else {
-			yield AlertHelper.show('error', 'Erro ao buscar as mercadorias', JSON.stringify(response.data));
-			yield put({
-				type: 'LOAD_GOODS_FAILED',
-				payload: {},
-			});
-
+	const storeOnSyncStorage = async (dados) => {
+		try {
+			console.log('... Salvando produtos no AsyncStorage');
+			await AsyncStorage.setItem('goods', JSON.stringify(dados));
+			console.log('-> Produtos salvos com sucesso!');
+		} catch (error) {
+			console.error('-> Erro ao salvar produtos no AsyncStorage:', error);
 		}
-
-	} catch ({message, response}) {
-		console.warn('[ERROR : LOAD GOODS]', {message, response});
-		yield put({
-			type: 'LOAD_GOODS_FAILED',
-			payload: {},
-		});
-		yield AlertHelper.show('error', 'Erro ao buscar as mercadorias', JSON.stringify(response));
 	}
-	
 
+	store_code = yield getStoredStoreCode();
+	payload.store_code = store_code;
+	payload.app_product_code = 1;
+
+	console.log('...Carregando produtos do açougue da loja ' + store_code);
+
+	let apiUrl = CONFIG.url + '/mercadorias/index.json';
+    yield get(
+        payload, 
+        apiUrl,
+        'LOAD_GOODS_SUCCESS',
+        'LOAD_GOODS_FAILED',
+		storeOnSyncStorage,
+        'Ocorreu um erro ao buscar os produtos do açougue'
+    );
+
+}
+
+function* loadProduceSectionGoods({payload}) {
+
+	const storeOnSyncStorage = async (dados) => {
+		try {
+			console.log('... Salvando produtos no AsyncStorage');
+			await AsyncStorage.setItem('goods_produce_section', JSON.stringify(dados));
+			console.log('-> Produtos salvos com sucesso!');
+		} catch (error) {
+			console.error('-> Erro ao salvar produtos no AsyncStorage:', error);
+		}
+	}
+
+	store_code = yield getStoredStoreCode();
+	payload.store_code = store_code;
+	payload.app_product_code = 2;
+
+	console.log('...Carregando produtos de horti da loja ' + store_code);
+
+	let apiUrl = CONFIG.url + '/mercadorias/index.json';
+    yield get(
+        payload, 
+        apiUrl,
+        'LOAD_PRODUCE_SECTION_GOODS_SUCCESS',
+        'LOAD_PRODUCE_SECTION_GOODS_FAILED',
+		storeOnSyncStorage,
+        'Ocorreu um erro ao buscar os produtos de horti'
+    );
+
+}
+
+function* loadProductions({payload}) {
+
+	store_code = yield getStoredStoreCode();
+	payload.store_code = store_code;
+
+	console.log('...Carregando produções da loja ' + store_code);
+
+	let apiUrl = CONFIG.url + '/dma/load-productions.json';
+    yield get(
+        payload, 
+        apiUrl,
+        'LOAD_PRODUCTIONS_SUCCESS',
+        'LOAD_PRODUCTIONS_FAILED',
+		null,
+        'Ocorreu um erro ao buscar as produções'
+    );
+
+}
+
+function* loadDiscrepancies({payload}) {
+
+	store_code = yield getStoredStoreCode();
+	payload.store_code = store_code;
+
+	console.log('...Carregando quebras da loja ' + store_code);
+
+	let apiUrl = CONFIG.url + '/dma/load-discrepancies.json';
+    yield get(
+        payload, 
+        apiUrl,
+        'LOAD_DISCREPANCIES_SUCCESS',
+        'LOAD_DISCREPANCIES_FAILED',
+		null,
+        'Ocorreu um erro ao buscar as quebras'
+    );
 
 }
 
@@ -341,6 +378,36 @@ function* confirmSaidas({payload}) {
 
 }
 
+function* confirmProducao({payload}) {
+
+	console.log('[SAGA] - SALVANDO PRODUÇÃO');
+
+	const store_code = yield getStoredStoreCode();
+	payload.values.store_code = store_code;
+
+	let apiUrl = CONFIG.url + '/dma/save-production.json';
+    yield post(
+        payload, 
+        apiUrl,
+        'Ocorreu um erro ao salvar a produção',
+    );
+}
+
+function* confirmQuebra({payload}) {
+
+	console.log('[SAGA] - SALVANDO QUEBRA');
+
+	const store_code = yield getStoredStoreCode();
+	payload.values.store_code = store_code;
+
+	let apiUrl = CONFIG.url + '/dma/save-discrepancy.json';
+    yield post(
+        payload, 
+        apiUrl,
+        'Ocorreu um erro ao salvar a quebra',
+    );
+}
+
 function* loadEntradas({payload}) {
 	console.log('carregando entradas...');
 
@@ -511,6 +578,10 @@ function* loadNextDate({payload}) {
 	}
 
 	const store_code = yield AsyncStorage.getItem('storeCode');
+	const params = {
+		store_code: store_code,
+		app_product_id: payload.app_product_id ? payload.app_product_id : 1
+	};
 
 	//TEM INTERNET, BUSCANDO OS DADOS ONLINE
 	try {
@@ -520,26 +591,41 @@ function* loadNextDate({payload}) {
 			headers: {
 				'content-type': 'multipart/form-data',
 			},
-			params: {
-				store_code: store_code
-			}
+			params: params
 		});
 
 		if (response.status == 200) {
 			if (response.data.status == 'ok') {
-				yield put({
-				  type: 'LOAD_NEXT_DATE_SUCCESS',
-				  payload: response.data.data,
-				});
+
+				if ( payload.app_product_id == 1 ) {
+					yield put({
+					  type: 'LOAD_NEXT_DATE_SUCCESS',
+					  payload: response.data.data,
+					});
+
+				} else if ( payload.app_product_id == 2 ) {
+					yield put({
+					  type: 'LOAD_NEXT_DATE_HORTI_SUCCESS',
+					  payload: response.data.data,
+					});
+
+				}
 
 				console.log("-> Próxima data buscada com sucesso!");
 				console.log(response.data.data);
 	
 			} else if (response.data.status == 'info') {
-				yield put({
-				  type: 'LOAD_NEXT_DATE_SUCCESS',
-				  payload: 'no_date',
-				});
+				if ( payload.app_product_id == 1 ) {
+					yield put({
+					type: 'LOAD_NEXT_DATE_SUCCESS',
+					payload: 'no_date',
+					});
+				} else if ( payload.app_product_id == 2 ) {
+					yield put({
+					type: 'LOAD_NEXT_DATE_HORTI_SUCCESS',
+					payload: 'no_date',
+					});
+				}
 	
 			} else {
 				yield AlertHelper.show('error', 'Erro', response.data.msg);
@@ -683,22 +769,89 @@ function* loadStores({payload}) {
 
 }
 
+function* gUserProducts({payload}) {
+	const networkStatus = yield NetInfo.fetch();
+	
+	if ( !networkStatus.isConnected ) {
+		yield AlertHelper.show(
+			'warn',
+			'Sem conexão',
+			'Sem conexão com a rede.',
+		);
+		return true;
+	}
+
+	try {
+		const response = yield call(callApi, {
+			endpoint: CONFIG.url + '/product-users/index.json',
+			method: 'GET',
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
+			params: {}
+		});
+
+		if (response.status == 200) {
+			if (response.data.status == 'ok') {
+				yield put({
+				  type: 'GET_USER_PRODUCTS_SUCCESS',
+				  payload: response.data.data,
+				});
+
+				console.log("-> Produtos buscados com sucesso!");
+				console.log(response.data.data);
+	
+			}
+			else {
+				yield AlertHelper.show('error', 'Erro', response.data.msg);
+				yield put({
+					type: 'GET_USER_PRODUCTS_FAILED',
+					payload: {},
+				});
+				console.error('Erro ao buscar os produtos que você tem acesso');
+	
+			}
+		} else {
+			yield AlertHelper.show('error', 'Erro ao buscar os produtos que você tem acesso', JSON.stringify(response.data));
+			yield put({
+				type: 'GET_USER_PRODUCTS_FAILED',
+				payload: {},
+			});
+
+		}
+
+	} catch ({message, response}) {
+		console.warn('[ERROR : LOAD NEXT DATE]', {message, response});
+		yield put({
+			type: 'LOAD_NEXT_DATE_FAILED',
+			payload: {},
+		});
+		yield AlertHelper.show('error', 'Erro ao buscar a data dos próximos lançamentos', JSON.stringify(response));
+	}
+}
+
 export default function* () {
 	yield takeLatest('LOGIN_TRIGGER', login);
 	
 	yield takeLatest('LOAD_NEXT_DATE', loadNextDate);
 
 	yield takeLatest('LOAD_GOODS', loadGoods);
+	yield takeLatest('LOAD_PRODUCE_SECTION_GOODS', loadProduceSectionGoods);
 	yield takeLatest('LOAD_CUTOUT_CODES', loadCutOutCodes);
 	yield takeLatest('LOAD_EXPECTED_YIELD', loadExpectedYield);
 	
 	yield takeLatest('CONFIRM_SAIDAS', confirmSaidas);
 	yield takeLatest('CONFIRM_ENTRADA', confirmEntrada);
+	yield takeLatest('CONFIRM_PRODUCAO', confirmProducao);
+	yield takeLatest('CONFIRM_QUEBRA', confirmQuebra);
 	yield takeLatest('LOAD_ENTRADAS', loadEntradas);
 	yield takeLatest('LOAD_SAIDAS', loadSaidas);
+	yield takeLatest('LOAD_PRODUCTIONS', loadProductions);
+	yield takeLatest('LOAD_DISCREPANCIES', loadDiscrepancies);
 	yield takeLatest('FINISH', finish);
 
 	yield takeLatest('LOAD_STORES', loadStores);
+	yield takeLatest('GET_USER_PRODUCTS', gUserProducts);
 	
 	yield takeLatest('LOGOUT', logout);
 }

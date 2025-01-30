@@ -1,164 +1,108 @@
 import React from 'react';
-import {
-	StyleSheet,
-	View,
-	StatusBar,
-} from 'react-native';
+import { StyleSheet, View, StatusBar } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import {Text } from 'react-native-elements';
-import { StackActions, useNavigation } from '@react-navigation/native';
-import FormLogin from '@components/Forms/FormLogin';
-import GlobalStyle from '@styles/global';
+import { Text } from 'react-native-elements';
+import { StackActions, useNavigation, useRoute } from '@react-navigation/native';
 import { useFormik } from 'formik';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Header from '@components/Header';
+import FormLogin from '@components/Forms/FormLogin';
+import GlobalStyle from '@styles/global';
+import COLORS from '@constants/colors';
 import * as yup from 'yup';
 
-import COLORS from '@constants/colors';
-
 const ValidationSchema = yup.object().shape({
-	user: yup.string().required('Usuário é obrigatório'),
-	password: yup.string().required('Senha é obrigatória'),
+  user: yup.string().required('Usuário é obrigatório'),
+  password: yup.string().required('Senha é obrigatória'),
 });
 
-export default function CenaFinalizar(props) {
-	const dispatch = useDispatch();
-    const navigation = useNavigation();
+export default function CenaFinalizar() {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const route = useRoute();
 
-	const next_date = useSelector(state => state.appReducer.next_date);
+  const { entradas, saidas, quebras, producoes, next_date, next_date_horti } = useSelector(state => state.appReducer);
 
-    const entradas = useSelector(state => state.appReducer.entradas);
-    const saidas = useSelector(state => state.appReducer.saidas);
+  const app_product_id = route.params?.app_product_id || 1;
 
-	const formik = useFormik({
-		initialValues: { user: '', password: '' },
-		validationSchema: ValidationSchema,
-		onSubmit: (values, {setSubmitting, resetForm}) => {
+  const formik = useFormik({
+	initialValues: { user: '', password: '' },
+	validationSchema: ValidationSchema,
+	onSubmit: async (values, { setSubmitting, resetForm }) => {
+	  const submitValues = { ...values, app_product_id };
 
-			let submitValues = {};
-            submitValues = Object.assign(values)
-			setSubmitting(true);
-		  
+	  setSubmitting(true);
+
+	  dispatch({
+		type: 'FINISH',
+		payload: {
+		  submitValues,
+		  setSubmitting,
+		  callback_success: async () => {
+			if (app_product_id === 1) {
+			  await AsyncStorage.multiRemove(['incomes', 'exits']);
+			  dispatch({ type: 'LOAD_ENTRADAS', payload: {} });
+			  dispatch({ type: 'LOAD_SAIDAS', payload: {} });
+			} else if (app_product_id === 2) {
+			  dispatch({ type: 'LOAD_PRODUCTIONS', payload: {} });
+			  dispatch({ type: 'LOAD_DISCREPANCIES', payload: {} });
+			}
+
 			dispatch({
-				type: 'FINISH',
-				payload: {
-                    submitValues: submitValues,
-                    setSubmitting: setSubmitting,
-                    callback_success: async () => {
-	
-                        await AsyncStorage.removeItem('incomes');
-                        await AsyncStorage.removeItem('exits');
+			  type: 'LOAD_NEXT_DATE',
+			  payload: { app_product_id },
+			});
 
-                        dispatch({
-                            type: 'LOAD_ENTRADAS',
-                            payload: {}
-                        })
-                        dispatch({
-                            type: 'LOAD_SAIDAS',
-                            payload: {}
-                        })
-
-						dispatch({
-							type: 'LOAD_NEXT_DATE',
-							payload: {}
-						});
-
-                        resetForm();
-                        navigation.dispatch(StackActions.pop(1));
-                    }
-				}
-			})
+			resetForm();
+			navigation.dispatch(StackActions.pop(1));
+		  },
 		},
-	});
+	  });
+	},
+  });
 
-    return (
-        <View style={styles.container}>
-            <StatusBar
-                translucent={true}
-                backgroundColor={'transparent'}
-                barStyle={'dark-content'}
-            />
-            <Header 
-				titulo={'Finalizando Entradas'} 
-				styles={{backgroundColor: COLORS.primary}} 
-				titleStyle={{color: 'white'}}
-                backButton={true}
-                iconColor='white'
-			/>
-			<View style={[GlobalStyle.secureMargin, {flex: 1}]}>
-                <View style={GlobalStyle.spaceSmall} />
-            {
-                entradas.length == 0 && <Text>As entradas ainda não forma lançadas</Text>
-            }
-            {
-                saidas.length == 0 && <Text>As saídas ainda não forma lançadas</Text>
-            }
-            {
-                next_date == "no_date" && <Text>Você não pode lançar dados para depois de amanhã!</Text>
-            }
-            {
-                entradas.length > 0 && saidas.length > 0 && next_date != 'no_date' && <FormLogin formik={formik} buttonText="Finalizar" />
-            }
-            </View>
-        </View>
-    );
+  const renderWarnings = () => {
+	const warnings = [];
+
+	if (app_product_id === 1) {
+	  if (!entradas.length) warnings.push('As entradas ainda não foram lançadas');
+	  if (!saidas.length) warnings.push('As saídas ainda não foram lançadas');
+	  if (next_date === 'no_date') warnings.push('Você não pode lançar dados para depois de amanhã!');
+	} else if (app_product_id === 2) {
+	  if (!quebras.length) warnings.push('As quebras ainda não foram lançadas');
+	  if (!producoes.length) warnings.push('As produções ainda não foram lançadas');
+	  if (next_date_horti === 'no_date') warnings.push('Você não pode lançar dados para depois de amanhã!');
+	}
+
+	return warnings.map((warning, index) => <Text key={index}>{warning}</Text>);
+  };
+
+  const canFinalize =
+	(app_product_id === 1 && entradas.length > 0 && saidas.length > 0 && next_date !== 'no_date') ||
+	(app_product_id === 2 && producoes.length > 0 && quebras.length > 0 && next_date_horti !== 'no_date');
+
+  return (
+	<View style={styles.container}>
+	  <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+	  <Header
+		titulo="Finalizando Entradas"
+		styles={{ backgroundColor: COLORS.primary }}
+		titleStyle={{ color: 'white' }}
+		backButton
+		iconColor="white"
+	  />
+	  <View style={[GlobalStyle.secureMargin, { flex: 1 }]}>
+		<View style={GlobalStyle.spaceSmall} />
+		{renderWarnings()}
+		{canFinalize && <FormLogin formik={formik} buttonText="Finalizar" />}
+	  </View>
+	</View>
+  );
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
-	imageContainer: { 
-		justifyContent: 'center',
-		alignItems: 'center',
-		//flex: 2
-	},
-	text: {
-		fontFamily: 'Mitr-Regular',
-		lineHeight: 18,
-	},
-	textMedium: {
-		fontFamily: 'Mitr-Medium',
-		marginBottom: 3,
-	},
-	centerFully: {
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	subtitle: {
-		textAlign: 'center',
-		fontSize: 15,
-		marginBottom: 7,
-	},
-	innerSpace: {
-		padding: 15,
-	},
-	discountBox: {
-		borderWidth: 0.5,
-		borderColor: '#CCC',
-		padding: 15,
-		borderRadius: 15,
-		margin: 15,
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	buttonVisitante: {
-		marginTop: 15,
-	},
-	buttonCadastrarText: {
-		textAlign: 'center',
-		color: '#FFF',
-	},
-	bgImage: {
-		width: 120,
-		height: 120,
-		position: 'absolute',
-		zIndex: 999,
-		bottom:-50,
-		right: -20,
-		alignSelf: 'flex-end',
-	}
+  container: {
+	flex: 1,
+  },
 });

@@ -14,8 +14,6 @@ export default function ModalReadExits(props) {
 
     const [selectedGood, setSelectedGood] = useState('');
 
-    const saidas = useSelector(state => state.appReducer.saidas);
-
     const goods = props.goods;
     const modalVisible = props.modalVisible;
     const setModalVisible = props.setModalVisible;
@@ -44,74 +42,7 @@ export default function ModalReadExits(props) {
                         setModalVisible(false);
                     }
                 }
-            })
-
-            /*if ( saidas.length > 0) {
-            
-                let _saidas = saidas.filter((data)=>{
-                    return parseFloat(data.goodCode) === parseFloat(values.goodCode);
-                });
-
-                /*if ( _saidas.length == 0 ) {
-                    console.log('-> Registro não encontrado na listagem, adicionando...');
-
-                    // Adiciona o item a lista de itens lidos
-                    let _saidas = saidas;
-                    _saidas.push(values);
-
-                    dispatch({
-                        type: 'CONFIRM_SAIDAS',
-                        payload: {
-                            submitValues: _saidas,
-                            setSubmitting: setSubmitting,
-                            callback_success: () => {
-                                setModalVisible(false);
-                            }
-                        }
-                    })
-
-
-                } else {
-                    console.log('-> Registro encontrado na listagem, atualizando valores...');
-
-                    // Soma os valores de recorte de primeira
-                    const kg = _saidas[0].kg;
-                    let sumKg = parseFloat(kg.replace(',', '.')) + parseFloat(values.kg.replace(',', '.'));
-                    sumKg = sumKg.toString().replace('.',',');
-                    _saidas[0].kg = sumKg;
-
-                    const new_saidas = saidas.map((data)=>{
-                        return parseFloat(data.goodCode) === parseFloat(values.goodCode) ? _saidas[0] : data;
-                    });
-
-                    dispatch({
-                        type: 'CONFIRM_SAIDAS',
-                        payload: {
-                            submitValues: new_saidas,
-                            setSubmitting: setSubmitting,
-                            callback_success: () => {
-                                setModalVisible(false);
-                            }
-                        }
-                    })
-                }*/
-
-            /*} else {
-
-                console.log('-> Nenhum registro encontrado, salvando o primeiro.');
-
-                dispatch({
-                    type: 'CONFIRM_SAIDAS',
-                    payload: {
-                        submitValues: [values],
-                        setSubmitting: setSubmitting,
-                        callback_success: () => {
-                            setModalVisible(false);
-                        }
-                    }
-                })
-
-            }*/
+            });
         },
     });
 
