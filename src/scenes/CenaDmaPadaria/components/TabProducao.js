@@ -23,7 +23,7 @@ const TabProducao = (props) => {
 	const loadGoods = async () => {
 		console.log('... Buscando mercadorias');
 		try {
-            const goodsData = await AsyncStorage.getItem('goods_produce_section');
+            const goodsData = await AsyncStorage.getItem('goods_bakery');
             if (goodsData !== null) {
                 // Se houver dados salvos, analise-os e atualize o estado 'goods'
                 setGoods(JSON.parse(goodsData));
@@ -42,7 +42,7 @@ const TabProducao = (props) => {
 		dispatch({
 			type: 'LOAD_PRODUCTIONS',
 			payload: {
-				app_product_id: 2,
+				app_product_id: 3,
 			},
 		});
 	}
@@ -90,7 +90,7 @@ const TabProducao = (props) => {
                 setModalVisible={setModalVisible}
                 goods={goods}
                 goodCode={goodCode}
-                app_product_id={2}
+                app_product_id={3}
             />
 		</ScrollView>
 
@@ -104,10 +104,10 @@ const TabProducao = (props) => {
                 type='outline'
                 title="Histórico"
                 onPress={()=>{
-                    navigation.navigate('ProducoesHorti');
+                    navigation.navigate('ProducoesPadaria');
                 }}
             />
-            <Button
+            {1 == 2 && <Button
                 containerStyle={{marginTop: 15, marginBottom: 15, marginRight: 15}}
                 titleStyle={{}}
                 buttonStyle={{borderRadius: 25, paddingVertical: 10, backgroundColor: '#CCC'}}
@@ -117,12 +117,12 @@ const TabProducao = (props) => {
                         CommonActions.navigate({
                             name: 'Finalizar',
                             params: {
-                                app_product_id: 2,
+                                app_product_id: 3,
                             },
                         })
                     ); 
                 }}
-            />
+            />}
             <Button
                 containerStyle={{marginTop: 15, marginBottom: 15, flex: 1}}
                 titleStyle={{}}

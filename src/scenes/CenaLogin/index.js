@@ -79,6 +79,11 @@ export default function CenaLogin(props) {
 					});
 
 					dispatch({
+						type: 'LOAD_BAKERY_GOODS',
+						payload: {}
+					});
+
+					dispatch({
 						type: 'LOAD_CUTOUT_CODES',
 						payload: {}
 					});

@@ -7,12 +7,12 @@ import { useDispatch } from 'react-redux';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { Button, ListItem, Text } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ModalReadProductions from '@components/Modals/ModalReadProductions';
-import ResumoProducao from './ResumoProducao';
+import ModalReadDiscrepancies from '@components/Modals/ModalReadDiscrepancies';
+import ResumoQuebras from './ResumoQuebras';
 
 import COLORS from '@constants/colors';
 
-const TabProducao = (props) => {
+const TabSaidas = (props) => {
 	const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -23,7 +23,8 @@ const TabProducao = (props) => {
 	const loadGoods = async () => {
 		console.log('... Buscando mercadorias');
 		try {
-            const goodsData = await AsyncStorage.getItem('goods_produce_section');
+            const goodsData = await AsyncStorage.getItem('goods_bakery');
+
             if (goodsData !== null) {
                 // Se houver dados salvos, analise-os e atualize o estado 'goods'
                 setGoods(JSON.parse(goodsData));
@@ -36,20 +37,20 @@ const TabProducao = (props) => {
         }
 	}
 
-    const loadProductions = async () => {
-		console.log('... Buscando produções');
+    const loadDiscrepancies = async () => {
+		console.log('... Buscando quebras');
 
-		dispatch({
-			type: 'LOAD_PRODUCTIONS',
+        dispatch({
+			type: 'LOAD_DISCREPANCIES',
 			payload: {
-				app_product_id: 2,
+				app_product_id: 3,
 			},
-		});
+        })
 	}
 
 	useEffect(() => {
 		loadGoods();
-        loadProductions();
+        loadDiscrepancies();
 	}, []);
 
     useEffect(() => {
@@ -85,16 +86,16 @@ const TabProducao = (props) => {
                     })
                 }
             </View>
-            <ModalReadProductions
+            <ModalReadDiscrepancies
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
                 goods={goods}
                 goodCode={goodCode}
-                app_product_id={2}
+                app_product_id={3}
             />
 		</ScrollView>
 
-		<ResumoProducao />
+		<ResumoQuebras />
 
 		<View style={{ paddingHorizontal: 16, paddingTop: 16, flexDirection: 'row' }}>
             <Button
@@ -104,10 +105,10 @@ const TabProducao = (props) => {
                 type='outline'
                 title="Histórico"
                 onPress={()=>{
-                    navigation.navigate('ProducoesHorti');
+                    navigation.navigate('QuebrasPadaria');
                 }}
             />
-            <Button
+            {1==2 && <Button
                 containerStyle={{marginTop: 15, marginBottom: 15, marginRight: 15}}
                 titleStyle={{}}
                 buttonStyle={{borderRadius: 25, paddingVertical: 10, backgroundColor: '#CCC'}}
@@ -117,17 +118,17 @@ const TabProducao = (props) => {
                         CommonActions.navigate({
                             name: 'Finalizar',
                             params: {
-                                app_product_id: 2,
+                                app_product_id: 3,
                             },
                         })
                     ); 
                 }}
-            />
+            />}
             <Button
                 containerStyle={{marginTop: 15, marginBottom: 15, flex: 1}}
                 titleStyle={{}}
                 buttonStyle={{borderRadius: 25, paddingVertical: 10, backgroundColor: COLORS.primary}}
-                title="ADICIONAR PRODUÇÃO"
+                title="ADICIONAR"
                 onPress={()=>{
                     setGoodCode('');
                     setModalVisible(true);
@@ -138,4 +139,4 @@ const TabProducao = (props) => {
 	);
 }
 
-export default TabProducao;
+export default TabSaidas;

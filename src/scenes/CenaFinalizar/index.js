@@ -44,9 +44,13 @@ export default function CenaFinalizar() {
 			  await AsyncStorage.multiRemove(['incomes', 'exits']);
 			  dispatch({ type: 'LOAD_ENTRADAS', payload: {} });
 			  dispatch({ type: 'LOAD_SAIDAS', payload: {} });
-			} else if (app_product_id === 2) {
-			  dispatch({ type: 'LOAD_PRODUCTIONS', payload: {} });
-			  dispatch({ type: 'LOAD_DISCREPANCIES', payload: {} });
+			} else {
+			  dispatch({ type: 'LOAD_PRODUCTIONS', payload: {
+				app_product_id
+			  } });
+			  dispatch({ type: 'LOAD_DISCREPANCIES', payload: {
+				app_product_id
+			  } });
 			}
 
 			dispatch({

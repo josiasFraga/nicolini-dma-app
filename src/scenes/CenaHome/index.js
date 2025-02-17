@@ -24,7 +24,8 @@ const COLORS = {
 
 const icons = {
     bull: require('@assets/imgs/bull.png'),
-    vegetable: require('@assets/imgs/vegetable.png')
+    vegetable: require('@assets/imgs/vegetable.png'),
+    bakery: require('@assets/imgs/bread.png')
 };
 
 

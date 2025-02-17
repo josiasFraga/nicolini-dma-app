@@ -90,6 +90,7 @@ const TabSaidas = (props) => {
                 setModalVisible={setModalVisible}
                 goods={goods}
                 goodCode={goodCode}
+                app_product_id={2}
             />
 		</ScrollView>
 

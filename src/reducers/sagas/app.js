@@ -148,19 +148,57 @@ function* loadProduceSectionGoods({payload}) {
 
 }
 
+function* loadBakeryGoods({payload}) {
+
+	const storeOnSyncStorage = async (dados) => {
+		try {
+			console.log('... Salvando produtos no AsyncStorage');
+			await AsyncStorage.setItem('goods_bakery', JSON.stringify(dados));
+			console.log('-> Produtos salvos com sucesso!');
+		} catch (error) {
+			console.error('-> Erro ao salvar produtos no AsyncStorage:', error);
+		}
+	}
+
+	store_code = yield getStoredStoreCode();
+	payload.store_code = store_code;
+	payload.app_product_code = 3;
+
+	console.log('...Carregando produtos de padaria da loja ' + store_code);
+
+	let apiUrl = CONFIG.url + '/mercadorias/index.json';
+    yield get(
+        payload, 
+        apiUrl,
+        'LOAD_BAKERY_GOODS_SUCCESS',
+        'LOAD_BAKERY_GOODS_FAILED',
+		storeOnSyncStorage,
+        'Ocorreu um erro ao buscar os produtos de padaria'
+    );
+
+}
+
 function* loadProductions({payload}) {
 
 	store_code = yield getStoredStoreCode();
 	payload.store_code = store_code;
 
-	console.log('...Carregando produções da loja ' + store_code);
+	console.log('...Carregando produções da loja ' + store_code + ' - ' + payload.app_product_id);
+
+	reducerSuccesFuction = 'LOAD_PRODUCTIONS_SUCCESS';
+	reducerFailedFuction = 'LOAD_PRODUCTIONS_FAILED';
+
+	if ( payload.app_product_id == 3 ) {
+		reducerSuccesFuction = 'LOAD_BAKERY_PRODUCTIONS_SUCCESS';
+		reducerFailedFuction = 'LOAD_BAKERY_PRODUCTIONS_FAILED';
+	}
 
 	let apiUrl = CONFIG.url + '/dma/load-productions.json';
     yield get(
         payload, 
         apiUrl,
-        'LOAD_PRODUCTIONS_SUCCESS',
-        'LOAD_PRODUCTIONS_FAILED',
+        reducerSuccesFuction,
+        reducerFailedFuction,
 		null,
         'Ocorreu um erro ao buscar as produções'
     );
@@ -172,14 +210,22 @@ function* loadDiscrepancies({payload}) {
 	store_code = yield getStoredStoreCode();
 	payload.store_code = store_code;
 
-	console.log('...Carregando quebras da loja ' + store_code);
+	console.log('...Carregando quebras da loja ' + store_code + ' - ' + payload.app_product_id);
+
+	reducerSuccesFuction = 'LOAD_DISCREPANCIES_SUCCESS';
+	reducerFailedFuction = 'LOAD_DISCREPANCIES_FAILED';
+
+	if ( payload.app_product_id == 3 ) {
+		reducerSuccesFuction = 'LOAD_BAKERY_DISCREPANCIES_SUCCESS';
+		reducerFailedFuction = 'LOAD_BAKERY_DISCREPANCIES_FAILED';
+	}
 
 	let apiUrl = CONFIG.url + '/dma/load-discrepancies.json';
     yield get(
         payload, 
         apiUrl,
-        'LOAD_DISCREPANCIES_SUCCESS',
-        'LOAD_DISCREPANCIES_FAILED',
+        reducerSuccesFuction,
+        reducerFailedFuction,
 		null,
         'Ocorreu um erro ao buscar as quebras'
     );
@@ -609,6 +655,12 @@ function* loadNextDate({payload}) {
 					  payload: response.data.data,
 					});
 
+				} else if ( payload.app_product_id == 3 ) {
+					yield put({
+					  type: 'LOAD_NEXT_DATE_ACOUGUE_SUCCESS',
+					  payload: response.data.data,
+					});
+
 				}
 
 				console.log("-> Próxima data buscada com sucesso!");
@@ -623,6 +675,11 @@ function* loadNextDate({payload}) {
 				} else if ( payload.app_product_id == 2 ) {
 					yield put({
 					type: 'LOAD_NEXT_DATE_HORTI_SUCCESS',
+					payload: 'no_date',
+					});
+				} else if ( payload.app_product_id == 3 ) {
+					yield put({
+					type: 'LOAD_NEXT_DATE_ACOUGUE_SUCCESS',
 					payload: 'no_date',
 					});
 				}
@@ -837,6 +894,7 @@ export default function* () {
 
 	yield takeLatest('LOAD_GOODS', loadGoods);
 	yield takeLatest('LOAD_PRODUCE_SECTION_GOODS', loadProduceSectionGoods);
+	yield takeLatest('LOAD_BAKERY_GOODS', loadBakeryGoods);
 	yield takeLatest('LOAD_CUTOUT_CODES', loadCutOutCodes);
 	yield takeLatest('LOAD_EXPECTED_YIELD', loadExpectedYield);
 	

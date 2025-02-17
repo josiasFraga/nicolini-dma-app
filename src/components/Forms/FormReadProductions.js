@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import GlobalStyle from '@styles/global';
 
 import PickerSearchableMercadoriasHorti from '@components/Forms/Fields/PickerSearchableMercadoriasHorti';
+import PickerSearchableMercadoriasPadaria from '@components/Forms/Fields/PickerSearchableMercadoriasPadaria';
 
 export default function FormReadProductions(props) {
 
@@ -12,6 +13,7 @@ export default function FormReadProductions(props) {
 	const selectedGood = props.selectedGood;
 	const searchInteralCodeIntoGoods = props.searchInteralCodeIntoGoods;
 	const setSelectedGood = props.setSelectedGood;
+	const app_product_id = props.app_product_id;
 
 	const handleDecimalInputChange = (name, value) => {
 		// Remove todos os caracteres que não sejam números
@@ -72,7 +74,7 @@ export default function FormReadProductions(props) {
 		<>
 			<Text style={{textAlign: 'left', width: '100%', color: "#999", paddingLeft: 10}}>{'Mercadoria: ' + selectedGood?.tx_descricao}</Text>
 			<View style={GlobalStyle.spaceSmall} />
-			<PickerSearchableMercadoriasHorti
+			{app_product_id == 2 && <PickerSearchableMercadoriasHorti
 			value={formik.values.goodCode}
 			setValue={
 				(callback) => {
@@ -81,7 +83,17 @@ export default function FormReadProductions(props) {
 					formik.setFieldValue('goodCode', callback(formik.values.goodCode));
 				}
 			}
-			/>
+			/>}
+			{app_product_id == 3 && <PickerSearchableMercadoriasPadaria
+			value={formik.values.goodCode}
+			setValue={
+				(callback) => {
+					console.log('formik.values.goodCode');
+					console.log(formik.values.goodCode);
+					formik.setFieldValue('goodCode', callback(formik.values.goodCode));
+				}
+			}
+			/>}
 			<View style={GlobalStyle.spaceSmall} />
 			<Input
 				label="Quantidade em Kg"

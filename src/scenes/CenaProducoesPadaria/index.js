@@ -4,12 +4,12 @@ import Header from '@components/Header';
 import Lista from './components/Lista';
 import COLORS from '@constants/colors';
 
-const CenaProducoesHorti = () => {
+const CenaProducoesPadaria = () => {
   return (
 	<>
 	  <Header 
 		backButton
-		titulo={'Horti - Produção'}
+		titulo={'Padaria - Produção'}
 		styles={{ backgroundColor: COLORS.primary }} 
 		titleStyle={{ color: '#f7f7f7' }} 
 		iconColor={'#f7f7f7'}
@@ -19,4 +19,4 @@ const CenaProducoesHorti = () => {
   );
 };
 
-export default CenaProducoesHorti;
+export default CenaProducoesPadaria;

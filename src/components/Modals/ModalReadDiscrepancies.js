@@ -18,6 +18,7 @@ export default function ModalReadDiscrepancies(props) {
 	const modalVisible = props.modalVisible;
 	const setModalVisible = props.setModalVisible;
 	const goodCode = props.goodCode;
+	const app_product_id = props.app_product_id;
 
 	const validationSchema = yup.object().shape({
 		kg: yup.string().required('Quantidade em KG obrigatório'),
@@ -32,6 +33,7 @@ export default function ModalReadDiscrepancies(props) {
 		validationSchema: validationSchema,
 		onSubmit: (values, {setSubmitting}) => {
 			values.good = selectedGood;
+			values.app_product_id = app_product_id;
 
 			dispatch({
 				type: 'CONFIRM_QUEBRA',
@@ -43,7 +45,7 @@ export default function ModalReadDiscrepancies(props) {
 						dispatch({
 							type: 'LOAD_DISCREPANCIES',
 							payload: {
-								app_product_id: 2,
+								app_product_id: app_product_id,
 							},
 						});
 					}
@@ -117,6 +119,7 @@ export default function ModalReadDiscrepancies(props) {
 						selectedGood={selectedGood}
 						searchInteralCodeIntoGoods={searchInteralCodeIntoGoods}
 						setSelectedGood={setSelectedGood}
+						app_product_id={app_product_id}
 					/>
 					<Button
 						titleStyle={{color: COLORS.primary}}

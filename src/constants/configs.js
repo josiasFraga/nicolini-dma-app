@@ -3,10 +3,8 @@ import {Dimensions, Platform, StatusBar} from 'react-native';
 export default {
   dimensions: Dimensions.get('window'),
   platform: Platform.OS,
-  baseUrl: 'http://192.168.1.221/api',
-  url: 'http://192.168.1.221/api',
-  //baseUrl: 'http://192.168.1.100/nicolini_dma/api',
-  //url: 'http://192.168.1.100/nicolini_dma/api',
+  //url: 'http://192.168.1.221/api',
+  url: 'http://192.168.1.9/nicolini_dma/api',
   googleUrl: 'https://maps.googleapis.com/maps/api/',
   googleKey: 'AIzaSyBioeO6fXInXQGFfUdIJEFR9pGxbZT8sYU',
   defaultToken: '9oeUG4w8p}%k3$',

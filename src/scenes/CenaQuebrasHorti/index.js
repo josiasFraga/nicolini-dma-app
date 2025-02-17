@@ -9,7 +9,7 @@ const CenaQuebrasHorti = () => {
 	<>
 	  <Header 
 		backButton
-		titulo={'Horti - Produção'}
+		titulo={'Horti - Quebras'}
 		styles={{ backgroundColor: COLORS.primary }} 
 		titleStyle={{ color: '#f7f7f7' }} 
 		iconColor={'#f7f7f7'}
