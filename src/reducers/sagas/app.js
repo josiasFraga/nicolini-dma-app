@@ -47,7 +47,7 @@ function* login({payload}) {
 
 		console.log('[SAGA] - [LOGANDO]', response);
 
-		if ( response.data.status == 'ok' ) {
+		if ( response.data?.status && response.data.status == 'ok' ) {
 			yield put({
 				type: 'LOGIN_SUCCESS',
 				payload: true,
@@ -73,7 +73,7 @@ function* login({payload}) {
 	} catch ({message, response}) {
 		payload.setSubmitting(false);
 
-		if ( response.status == 500 ) {
+		if ( response?.status == 500 ) {
 			AlertHelper.show('error', 'Erro', 'Login e/ou senha inválidos');
 
 		} else {
@@ -454,6 +454,23 @@ function* confirmQuebra({payload}) {
     );
 }
 
+function* confirmSaidaEntrada({payload}) {
+
+	console.log('[SAGA] - SALVANDO SAIDA/ENTRADA');
+
+	const store_code = yield getStoredStoreCode();
+	payload.values.store_code = store_code;
+
+	console.log(payload.values);
+
+	let apiUrl = CONFIG.url + '/dma/save-income-outcome.json';
+    yield post(
+        payload, 
+        apiUrl,
+        'Ocorreu um erro ao salvar a saída/entrada',
+    );
+}
+
 function* loadEntradas({payload}) {
 	console.log('carregando entradas...');
 
@@ -470,6 +487,11 @@ function* loadEntradas({payload}) {
 
 	const store_code = yield AsyncStorage.getItem('storeCode');
 
+	const params = {
+		store_code: store_code,
+		app_product_id: payload.app_product_id ? payload.app_product_id : 1
+	};
+
 	try {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/dma/load-incomes.json',
@@ -477,21 +499,28 @@ function* loadEntradas({payload}) {
 			headers: {
 				'content-type': 'multipart/form-data',
 			},
-			params: {
-				store_code: store_code
-			}
+			params: params
 		});
 
 		if (response.status == 200) {
 
 			if (response.data.status == 'ok') {
-
-				yield put({
-					type: 'SET_ENTRADAS',
-					payload: response.data.data,
-				});
 	
-				yield AsyncStorage.setItem('incomes', JSON.stringify(response.data.data));
+				if ( params.app_product_id == 1 ) {
+
+					yield put({
+						type: 'SET_ENTRADAS',
+						payload: response.data.data,
+					});
+
+					yield AsyncStorage.setItem('incomes', JSON.stringify(response.data.data));
+				} else if ( params.app_product_id == 3 ) {
+					yield put({
+						type: 'LOAD_BAKERY_INCOMES_SUCCESS',
+						payload: response.data.data,
+					});
+				}
+				
 				
 	
 			} else {
@@ -524,6 +553,11 @@ function* loadSaidas({payload}) {
 
 	const store_code = yield AsyncStorage.getItem('storeCode');
 
+	const params = {
+		store_code: store_code,
+		app_product_id: payload.app_product_id ? payload.app_product_id : 1
+	};
+
 	try {
 		const response = yield call(callApi, {
 			endpoint: CONFIG.url + '/dma/load-outcomes.json',
@@ -540,12 +574,19 @@ function* loadSaidas({payload}) {
 
 			if (response.data.status == 'ok') {
 
-				yield put({
-					type: 'SET_SAIDAS',
-					payload: response.data.data,
-				});
-	
-				yield AsyncStorage.setItem('outcomes', JSON.stringify(response.data.data));
+				if ( params.app_product_id == 1 ) {
+					yield put({
+						type: 'SET_SAIDAS',
+						payload: response.data.data,
+					});
+		
+					yield AsyncStorage.setItem('outcomes', JSON.stringify(response.data.data));
+				} else if ( params.app_product_id == 3 ) {
+					yield put({
+						type: 'LOAD_BAKERY_OUTCOMES_SUCCESS',
+						payload: response.data.data,
+					});
+				}
 				
 	
 			} else {
@@ -902,6 +943,7 @@ export default function* () {
 	yield takeLatest('CONFIRM_ENTRADA', confirmEntrada);
 	yield takeLatest('CONFIRM_PRODUCAO', confirmProducao);
 	yield takeLatest('CONFIRM_QUEBRA', confirmQuebra);
+	yield takeLatest('CONFIRM_SAIDA_ENTRADA', confirmSaidaEntrada);
 	yield takeLatest('LOAD_ENTRADAS', loadEntradas);
 	yield takeLatest('LOAD_SAIDAS', loadSaidas);
 	yield takeLatest('LOAD_PRODUCTIONS', loadProductions);

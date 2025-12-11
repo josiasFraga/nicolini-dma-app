@@ -13,6 +13,7 @@ import { getUniqueId } from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TabQuebras from './components/TabQuebras';
 import TabProducao from './components/TabProducao';
+import TabEntradaSaida from './components/TabEntradaSaida';
 import Header from '@components/Header';
 import { TabView, SceneMap } from 'react-native-tab-view';
 
@@ -29,7 +30,8 @@ const CenaDmaPadaria = (props) => {
 
 	const [routes] = useState([
 		{ key: 'first', title: 'Quebras' },
-		{ key: 'second', title: 'Produção' },
+		{ key: 'second', title: 'Saída/Entrada' },
+		{ key: 'third', title: 'Produção' },
 	]);
 
 	const renderTabBar = props => (
@@ -67,7 +69,8 @@ const CenaDmaPadaria = (props) => {
 
 	const renderScene = SceneMap({
 		first: TabQuebras,
-		second: TabProducao,
+		second: TabEntradaSaida,
+		third: TabProducao,
 	});
 
 	const loadStore = async () => {

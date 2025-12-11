@@ -12,6 +12,8 @@ const INITIAL_STATE = {
   producoes_padaria: [],
   quebras_padaria: [],
   next_date_padaria: '',
+  saidas_padaria: [],
+  entradas_padaria: [],
 
   // Hortifruti
   is_loading_produce_section_goods: false,
@@ -93,6 +95,16 @@ export const appReducer = (state = INITIAL_STATE, action) => {
 		return {...state, is_quebras_loading: false, quebras_padaria: action.payload };
     case 'LOAD_BAKERY_DISCREPANCIES_FAILED':
 		return {...state, is_quebras_loading: false, quebras_padaria: []};
+
+    case 'LOAD_BAKERY_INCOMES_SUCCESS':
+		return {...state, entradas_padaria: action.payload };
+    case 'LOAD_BAKERY_INCOMES_FAILED':
+		return {...state, entradas_padaria: []};
+
+    case 'LOAD_BAKERY_OUTCOMES_SUCCESS':
+		return {...state, saidas_padaria: action.payload };
+    case 'LOAD_BAKERY_OUTCOMES_FAILED':
+		return {...state, saidas_padaria: []};
   
     // Açougue
     case 'LOAD_CUTOUT_CODES':
